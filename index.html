@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desensamblaje y Resiliencia en Edificación | AI Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f4; 
+            color: #292524; 
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .layer-block {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+        .layer-block:hover, .layer-block.active {
+            transform: scale(1.02) translateX(10px);
+            box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+            position: relative;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #e7e5e4; }
+        ::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #78716c; }
+
+        .ai-gradient {
+            background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-teal-200 selection:text-teal-900">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Deep Teal (#0f766e) for a professional and sustainable aesthetic. -->
+    
+    <!-- Application Structure Plan: 
+         1. Navigation: Links to standard sections and the new AI Consultant.
+         2. Hero: Introduction to DfD.
+         3. Interactive Layer Model: Visual breakdown of Stewart Brand's 6S layers.
+         4. Gemini AI Section: NEW. A dual-feature AI lab (Chat & Project Analyzer) to apply theory to practice.
+         5. Principles: Core DfD methodologies.
+         6. Impact Data: Quantitative charts.
+         Reasoning: Moving from theory and visualization to AI-assisted practical application adds massive value for professional users.
+    -->
+
+    <!-- Visualization & Content Choices: 
+         - AI Assistant: Text interaction via Gemini 2.5 Flash. Use of structured prompt to maintain "Architectural Consultant" persona.
+         - AI Analyzer: Form-to-Text generation for specific DfD audits.
+         - Charts: Lifespan and Waste metrics via Chart.js.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-stone-100/90 backdrop-blur-md border-b border-stone-300 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <span class="text-2xl">🏗️</span>
+                    <span class="font-bold text-xl text-teal-800 tracking-tight">DfD Arch <span class="text-stone-400 font-light text-sm ml-1">+ AI</span></span>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#capas" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Capas</a>
+                    <a href="#ai-consultant" class="text-teal-700 hover:text-teal-800 font-bold transition-colors">✨ Consultor AI</a>
+                    <a href="#principios" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Principios</a>
+                    <a href="#datos" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Impacto</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / Intro -->
+    <header id="intro" class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
+        <div class="md:w-1/2 space-y-6">
+            <div class="inline-block px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-semibold tracking-wide uppercase">
+                Arquitectura Circular Inteligente
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-stone-900 leading-tight">
+                Diseño para el Desensamblaje (DfD)
+            </h1>
+            <p class="text-lg text-stone-700 leading-relaxed">
+                Separamos los elementos del edificio en capas independientes para permitir el mantenimiento y reciclaje sin demoliciones masivas. Ahora potenciado con <strong>Inteligencia Artificial</strong> para optimizar la resiliencia climática.
+            </p>
+            <div class="flex gap-4 pt-4">
+                <a href="#ai-consultant" class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-md flex items-center gap-2">
+                    ✨ Consultar con Gemini
+                </a>
+            </div>
+        </div>
+        <div class="md:w-1/2 w-full bg-stone-200 rounded-2xl p-8 shadow-inner border border-stone-300 relative overflow-hidden flex items-center justify-center min-h-[300px]">
+            <div class="absolute w-64 h-64 border-4 border-dashed border-stone-400 rounded-full animate-[spin_60s_linear_infinite] opacity-50"></div>
+            <div class="z-10 text-center bg-white/80 backdrop-blur p-6 rounded-xl shadow-lg border border-white">
+                <div class="text-4xl mb-2">🔄</div>
+                <h3 class="font-bold text-xl text-stone-800">Resiliencia Estructural</h3>
+                <p class="text-sm text-stone-600 mt-2">Capas desacopladas =<br>Edificios que duran siglos.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section: Interactive Layers -->
+    <section id="capas" class="py-20 bg-stone-800 text-stone-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12 md:w-2/3">
+                <h2 class="text-3xl font-bold mb-4 text-white">El Modelo de las "6 S" (Shearing Layers)</h2>
+                <p class="text-stone-300 text-lg">
+                    La resiliencia se logra cuando una capa rápida no está incrustada irreversiblemente en una lenta.
+                </p>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-12 items-start">
+                <div class="w-full md:w-1/3 flex flex-col-reverse justify-end gap-1 font-mono text-sm" id="layer-stack"></div>
+
+                <div class="w-full md:w-2/3 bg-stone-700 p-8 rounded-2xl shadow-xl border border-stone-600 min-h-[400px]" id="layer-info-panel">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="text-5xl" id="panel-icon">👆</div>
+                        <div>
+                            <h3 class="text-3xl font-bold text-white" id="panel-title">Selecciona una capa</h3>
+                            <p class="text-teal-300 font-medium text-lg mt-1" id="panel-lifespan">Haz clic en los bloques</p>
+                        </div>
+                    </div>
+                    <div class="space-y-6 text-stone-200" id="panel-content">
+                        <p id="panel-desc">Explora la anatomía del DfD seleccionando una de las capas de la izquierda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Gemini AI Integration -->
+    <section id="ai-consultant" class="py-20 bg-white border-y border-stone-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <!-- Chat Assistant -->
+                <div class="space-y-6">
+                    <div class="p-1">
+                        <h2 class="text-3xl font-bold text-stone-900 mb-2">✨ Consultor DfD Inteligente</h2>
+                        <p class="text-stone-600">Pregunta a Gemini sobre estrategias específicas de desensamblaje o resiliencia para tu proyecto.</p>
+                    </div>
+                    
+                    <div class="bg-stone-50 border border-stone-200 rounded-2xl overflow-hidden flex flex-col h-[500px]">
+                        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
+                            <div class="bg-teal-100 text-teal-800 p-3 rounded-lg max-w-[80%]">
+                                Hola. Soy tu asistente experto en arquitectura circular. ¿Tienes dudas sobre cómo desacoplar alguna capa de tu edificio?
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-stone-200 bg-white flex gap-2">
+                            <input type="text" id="chat-input" placeholder="Ej: ¿Cómo desacoplar instalaciones en fachadas?" class="flex-grow px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                            <button onclick="sendChatMessage()" id="chat-send-btn" class="bg-teal-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-teal-800 transition-colors">✨</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Auditor -->
+                <div class="bg-stone-100 rounded-3xl p-8 border border-stone-200">
+                    <h3 class="text-2xl font-bold text-stone-900 mb-6">Analizador de Estrategia DfD</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-1">Capa a Analizar</label>
+                            <select id="audit-layer" class="w-full p-3 rounded-lg border border-stone-300">
+                                <option value="Estructura">Estructura</option>
+                                <option value="Fachada">Fachada (Skin)</option>
+                                <option value="Servicios">Servicios (Instalaciones)</option>
+                                <option value="Espacio Interior">Espacio Interior</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-1">Tipo de Conexión</label>
+                            <input type="text" id="audit-connection" placeholder="Ej: Atornillado, Soldadura, Clips..." class="w-full p-3 rounded-lg border border-stone-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-1">Materiales Principales</label>
+                            <input type="text" id="audit-materials" placeholder="Ej: Madera CLT, Acero Galv..." class="w-full p-3 rounded-lg border border-stone-300">
+                        </div>
+                        <button onclick="runAudit()" id="audit-btn" class="w-full ai-gradient text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 mt-4">
+                            ✨ Realizar Auditoría de Resiliencia
+                        </button>
+                    </div>
+
+                    <div id="audit-result-container" class="mt-8 hidden animate-fade-in">
+                        <div class="bg-white p-6 rounded-xl border border-teal-200 shadow-sm">
+                            <h4 class="text-teal-800 font-bold mb-2 flex items-center gap-2">
+                                <span class="text-xl">📋</span> Resultado del Análisis
+                            </h4>
+                            <div id="audit-result-text" class="text-stone-700 text-sm leading-relaxed whitespace-pre-wrap">
+                                Analizando datos con Gemini...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Principles Section -->
+    <section id="principios" class="py-20 bg-stone-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold text-stone-900 mb-4">Principios de Implementación</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                    <div class="w-14 h-14 bg-teal-100 text-teal-700 rounded-xl flex items-center justify-center text-2xl mb-6">🔩</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-3">Conexiones Mecánicas</h3>
+                    <p class="text-stone-600">Eliminación de adhesivos químicos. Se priorizan tornillos y ensamblajes en seco.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-2xl mb-6">🧩</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-3">Interfaces Estándar</h3>
+                    <p class="text-stone-600">Componentes modulares Plug & Play con tolerancias estandarizadas.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                    <div class="w-14 h-14 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-2xl mb-6">📱</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-3">BIM & Pasaportes</h3>
+                    <p class="text-stone-600">Registros digitales de materiales para su futuro desensamblaje.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Section -->
+    <section id="datos" class="py-20 bg-stone-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-stone-900 mb-12">Análisis de Resiliencia Comparativo</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-stone-800 mb-4">Ciclo de Vida por Capas (Años)</h3>
+                    <div class="chart-container"><canvas id="lifespanChart"></canvas></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm">
+                    <h3 class="font-bold text-stone-800 mb-4">Generación de Residuos (100 Años)</h3>
+                    <div class="chart-container"><canvas id="wasteChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-stone-900 text-stone-400 py-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🏗️</span>
+                <span class="font-bold text-xl text-stone-200">DfD Arch Intelligence</span>
+            </div>
+            <p class="text-sm">Impulsado por Gemini 2.5 Flash para arquitectura resiliente.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- GEMINI API CONFIG ---
+        const apiKey = "";
+        const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+
+        async function callGemini(prompt, systemInstruction = "") {
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo obtener respuesta.";
+                } catch (e) {
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(res => setTimeout(res, delay));
+                }
+            }
+            return "Error tras múltiples intentos. Por favor, revisa la conexión.";
+        }
+
+        // --- CHAT LOGIC ---
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            chatInput.value = '';
+            chatSendBtn.disabled = true;
+
+            const systemPrompt = "Eres un Consultor Experto en Economía Circular y Arquitectura DfD (Diseño para el Desensamblaje). Responde de forma técnica pero accesible, siempre en español. Enfatiza la resiliencia y la separación de capas (Site, Structure, Skin, Services, Space Plan, Stuff).";
+            
+            const response = await callGemini(text, systemPrompt);
+            addMessage(response, 'ai');
+            chatSendBtn.disabled = false;
+        }
+
+        function addMessage(text, role) {
+            const div = document.createElement('div');
+            div.className = role === 'user' 
+                ? "bg-stone-200 text-stone-800 p-3 rounded-lg max-w-[80%] self-end ml-auto" 
+                : "bg-teal-700 text-white p-3 rounded-lg max-w-[80%] self-start";
+            div.textContent = text;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendChatMessage(); });
+
+        // --- AUDIT LOGIC ---
+        async function runAudit() {
+            const layer = document.getElementById('audit-layer').value;
+            const connection = document.getElementById('audit-connection').value;
+            const materials = document.getElementById('audit-materials').value;
+            
+            if (!connection || !materials) {
+                alertCustom("Por favor completa los campos de Conexión y Materiales.");
+                return;
+            }
+
+            const btn = document.getElementById('audit-btn');
+            const resultContainer = document.getElementById('audit-result-container');
+            const resultText = document.getElementById('audit-result-text');
+
+            btn.disabled = true;
+            btn.textContent = "Analizando con IA...";
+            resultContainer.classList.remove('hidden');
+            resultText.textContent = "Generando informe detallado de resiliencia...";
+
+            const prompt = `Realiza una auditoría DfD para la capa "${layer}". 
+            Sistema constructivo propuesto: Conexión mediante "${connection}" y materiales "${materials}". 
+            Evalúa: 
+            1. Grado de reversibilidad (0-100%).
+            2. Impacto en la resiliencia del edificio a 50 años.
+            3. Recomendaciones de mejora para facilitar el desensamblaje.
+            Sé breve y usa puntos clave.`;
+
+            const systemPrompt = "Eres un auditor de certificación de economía circular para arquitectura industrializada.";
+            
+            const auditResult = await callGemini(prompt, systemPrompt);
+            resultText.textContent = auditResult;
+            btn.disabled = false;
+            btn.innerHTML = "✨ Realizar Auditoría de Resiliencia";
+        }
+
+        function alertCustom(msg) {
+            const el = document.createElement('div');
+            el.className = "fixed bottom-4 right-4 bg-amber-500 text-white p-4 rounded-lg shadow-2xl z-[100] animate-bounce";
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        // --- EXISTING LAYER DATA & LOGIC ---
+        const layersData = [
+            { id: 'site', name: 'Site', icon: '🌍', lifespan: 'Eterno', colorClass: 'bg-stone-950', textClass: 'text-stone-300', desc: 'Ubicación física permanente.', prob: 'Ignorar el clima fuerza a los servicios.', dfd: 'Cimentaciones reversibles.' },
+            { id: 'structure', name: 'Structure', icon: '🏛️', lifespan: '30 - 300 años', colorClass: 'bg-stone-800', textClass: 'text-stone-300', desc: 'Cimientos y carga duradera.', prob: 'Hormigón monolítico irreparable.', dfd: 'Acero o CLT atornillado.' },
+            { id: 'skin', name: 'Skin', icon: '🏢', lifespan: '20 - 50 años', colorClass: 'bg-stone-600', textClass: 'text-stone-100', desc: 'Fachadas y cubiertas.', prob: 'Acabados adheridos que se pican.', dfd: 'Fachadas ventiladas modulares.' },
+            { id: 'services', name: 'Services', icon: '⚙️', lifespan: '7 - 15 años', colorClass: 'bg-teal-700', textClass: 'text-white', desc: 'Instalaciones tecnológicas.', prob: 'Tuberías empotradas en muros.', dfd: 'Suelos y techos registrables.' },
+            { id: 'space', name: 'Space Plan', icon: '📏', lifespan: '3 - 30 años', colorClass: 'bg-emerald-600', textClass: 'text-white', desc: 'Distribución interior.', prob: 'Tabiques de ladrillo y yeso.', dfd: 'Tabiquería seca o móvil.' },
+            { id: 'stuff', name: 'Stuff', icon: '🪑', lifespan: '0 - 10 años', colorClass: 'bg-amber-500', textClass: 'text-stone-900', desc: 'Mobiliario y equipos.', prob: 'Muebles fijos no reutilizables.', dfd: 'Mobiliario independiente.' }
+        ];
+
+        const stackContainer = document.getElementById('layer-stack');
+        let activeLayerId = 'services';
+
+        function renderLayerStack() {
+            stackContainer.innerHTML = '';
+            [...layersData].forEach((layer) => {
+                const heightClass = layer.id === 'site' ? 'h-8' : (layer.id === 'structure' ? 'h-16' : 'h-12');
+                const active = layer.id === activeLayerId;
+                const block = document.createElement('div');
+                block.className = `layer-block ${layer.colorClass} ${layer.textClass} flex items-center justify-between px-4 rounded shadow-sm ${heightClass} ${active ? 'opacity-100 scale-105 z-10 font-bold border-l-4 border-white' : 'opacity-80'}`;
+                block.innerHTML = `<span>${layer.icon} ${layer.name}</span>`;
+                block.onclick = () => { activeLayerId = layer.id; renderLayerStack(); updateInfoPanel(layer); };
+                stackContainer.appendChild(block);
+            });
+        }
+
+        function updateInfoPanel(layer) {
+            document.getElementById('panel-icon').textContent = layer.icon;
+            document.getElementById('panel-title').textContent = layer.name;
+            document.getElementById('panel-lifespan').textContent = `Vida Útil: ${layer.lifespan}`;
+            document.getElementById('panel-content').innerHTML = `
+                <div class="bg-stone-800 p-4 rounded-lg border-l-4 border-teal-500 mb-4"><p>${layer.desc}</p></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-stone-800 p-3 rounded"><strong>Problema:</strong> ${layer.prob}</div>
+                    <div class="bg-stone-800 p-3 rounded text-teal-300"><strong>DfD:</strong> ${layer.dfd}</div>
+                </div>`;
+        }
+
+        renderLayerStack();
+        updateInfoPanel(layersData.find(l => l.id === activeLayerId));
+
+        // --- CHARTS ---
+        new Chart(document.getElementById('lifespanChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Stuff', 'Space', 'Services', 'Skin', 'Structure', 'Site'],
+                datasets: [{ data: [5, 15, 12, 35, 150, 500], backgroundColor: ['#f59e0b', '#059669', '#0f766e', '#57534e', '#292524', '#0c0a09'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
+        });
+
+        new Chart(document.getElementById('wasteChart'), {
+            type: 'line',
+            data: {
+                labels: [0, 20, 40, 60, 80, 100],
+                datasets: [
+                    { label: 'Tradicional', data: [0, 30, 90, 150, 220, 500], borderColor: '#57534e', fill: true, backgroundColor: 'rgba(87,83,78,0.1)' },
+                    { label: 'DfD + AI', data: [0, 5, 12, 18, 22, 30], borderColor: '#0f766e', fill: true, backgroundColor: 'rgba(15,118,110,0.2)' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    </script>
+</body>
+</html>
