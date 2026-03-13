@@ -1,439 +1,443 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desensamblaje y Resiliencia en Edificación | AI Edition</title>
+    <title>Investigación: Arquitectura de Capas Desacopladas y DfD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f4; 
-            color: #292524; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap');
         
+        :root {
+            --bg-neutral: #FDFBF7;
+            --accent-deep: #1A202C;
+            --accent-soft: #718096;
+            --primary-blue: #2B6CB0;
+            --success-green: #2F855A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-neutral);
+            color: var(--accent-deep);
+            scroll-behavior: smooth;
+        }
+
         .chart-container {
             position: relative;
             width: 100%;
             max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 400px;
+            margin: 2rem auto;
+            height: 400px;
+            max-height: 450px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #E2E8F0;
         }
 
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
+        .text-content {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #2D3748;
         }
 
-        .layer-block {
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border-bottom: 2px solid rgba(255,255,255,0.2);
-        }
-        .layer-block:hover, .layer-block.active {
-            transform: scale(1.02) translateX(10px);
-            box-shadow: -5px 5px 15px rgba(0,0,0,0.1);
-            z-index: 10;
-            position: relative;
+        .technical-box {
+            border-left: 4px solid var(--primary-blue);
+            background: #EDF2F7;
+            padding: 1.5rem;
+            border-radius: 0 0.75rem 0.75rem 0;
+            margin: 2rem 0;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #e7e5e4; }
-        ::-webkit-scrollbar-thumb { background: #a8a29e; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #78716c; }
+        .nav-link {
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+        }
 
-        .ai-gradient {
-            background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+        .nav-link.active {
+            border-left-color: var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+
+        .sticky-sidebar {
+            height: calc(100vh - 4rem);
+            top: 2rem;
+        }
+
+        .drop-cap::first-letter {
+            font-size: 3.5rem;
+            font-weight: 700;
+            float: left;
+            margin-right: 0.75rem;
+            line-height: 1;
+            color: var(--primary-blue);
         }
     </style>
 </head>
-<body class="antialiased selection:bg-teal-200 selection:text-teal-900">
+<body class="antialiased">
 
-    <!-- Chosen Palette: Warm Neutrals (Stone) with Deep Teal (#0f766e) for a professional and sustainable aesthetic. -->
-    
-    <!-- Application Structure Plan: 
-         1. Navigation: Links to standard sections and the new AI Consultant.
-         2. Hero: Introduction to DfD.
-         3. Interactive Layer Model: Visual breakdown of Stewart Brand's 6S layers.
-         4. Gemini AI Section: NEW. A dual-feature AI lab (Chat & Project Analyzer) to apply theory to practice.
-         5. Principles: Core DfD methodologies.
-         6. Impact Data: Quantitative charts.
-         Reasoning: Moving from theory and visualization to AI-assisted practical application adds massive value for professional users.
-    -->
+<!-- Chosen Palette: Architectural Monolith (FDFBF7 Background, Slate & Blue accents) -->
 
-    <!-- Visualization & Content Choices: 
-         - AI Assistant: Text interaction via Gemini 2.5 Flash. Use of structured prompt to maintain "Architectural Consultant" persona.
-         - AI Analyzer: Form-to-Text generation for specific DfD audits.
-         - Charts: Lifespan and Waste metrics via Chart.js.
-    -->
+<!-- Application Structure Plan: 
+    He diseñado una estructura de "Reporte Académico Interactivo". 
+    1. Sidebar de navegación: Permite al usuario saltar entre las densas secciones de texto.
+    2. Main Content: Un flujo de lectura que intercala análisis crítico profundo con visualizaciones de datos.
+    3. Dashboard de Métricas: Al final de cada sección técnica, un resumen visual.
+    4. El objetivo es que la cantidad de información no abrume, usando jerarquía tipográfica clara (Drop caps, Bold sections) y cajas de "Concepto Técnico" (technical-box).
+-->
 
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!-- Visualization & Content Choices: 
+    - Report Info -> Datos masivos de residuos y CO2 -> Goal: Impacto -> Viz: Bar Chart (Chart.js) -> Justificación: Los números crudos necesitan escala.
+    - Report Info -> Capas de Brand -> Goal: Organización -> Viz: Stacked HTML cards interactiva -> Justificación: Permite visualizar el desacoplamiento físico.
+    - Report Info -> Casos de Éxito -> Goal: Comparar -> Viz: Radiales (Chart.js) -> Justificación: Muestra el desempeño multidimensional (Social, Eco, Circular).
+    - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+-->
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-stone-100/90 backdrop-blur-md border-b border-stone-300 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex-shrink-0 flex items-center gap-2">
-                    <span class="text-2xl">🏗️</span>
-                    <span class="font-bold text-xl text-teal-800 tracking-tight">DfD Arch <span class="text-stone-400 font-light text-sm ml-1">+ AI</span></span>
-                </div>
-                <div class="hidden md:flex space-x-6">
-                    <a href="#capas" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Capas</a>
-                    <a href="#ai-consultant" class="text-teal-700 hover:text-teal-800 font-bold transition-colors">✨ Consultor AI</a>
-                    <a href="#principios" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Principios</a>
-                    <a href="#datos" class="text-stone-600 hover:text-teal-700 font-medium transition-colors">Impacto</a>
-                </div>
-            </div>
+<div class="flex min-h-screen">
+    <!-- NAVEGACIÓN LATERAL -->
+    <aside class="hidden lg:block w-72 bg-white border-r border-stone-200 p-8 sticky top-0 h-screen overflow-y-auto custom-scrollbar">
+        <div class="mb-10">
+            <h1 class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">Investigación 2024</h1>
+            <p class="text-lg font-bold leading-tight">Arquitectura de Capas Desacopladas</p>
         </div>
-    </nav>
-
-    <!-- Hero / Intro -->
-    <header id="intro" class="pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
-        <div class="md:w-1/2 space-y-6">
-            <div class="inline-block px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-semibold tracking-wide uppercase">
-                Arquitectura Circular Inteligente
-            </div>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-stone-900 leading-tight">
-                Diseño para el Desensamblaje (DfD)
-            </h1>
-            <p class="text-lg text-stone-700 leading-relaxed">
-                Separamos los elementos del edificio en capas independientes para permitir el mantenimiento y reciclaje sin demoliciones masivas. Ahora potenciado con <strong>Inteligencia Artificial</strong> para optimizar la resiliencia climática.
-            </p>
-            <div class="flex gap-4 pt-4">
-                <a href="#ai-consultant" class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-md flex items-center gap-2">
-                    ✨ Consultar con Gemini
-                </a>
-            </div>
+        <nav class="space-y-4 text-sm text-stone-600">
+            <a href="#intro" class="nav-link block hover:text-blue-600">Introducción y Contexto</a>
+            <a href="#problematica" class="nav-link block hover:text-blue-600">Problemática Sistémica</a>
+            <a href="#teoria-capas" class="nav-link block hover:text-blue-600">Teoría de Stewart Brand</a>
+            <a href="#dfd-metodo" class="nav-link block hover:text-blue-600">Metodología DfD</a>
+            <a href="#industrializacion" class="nav-link block hover:text-blue-600">Industrialización 4.0</a>
+            <a href="#digitalizacion" class="nav-link block hover:text-blue-600">Digitalización y BIM</a>
+            <a href="#casos" class="nav-link block hover:text-blue-600">Casos de Estudio</a>
+            <a href="#conclusiones" class="nav-link block hover:text-blue-600">Conclusiones Críticas</a>
+        </nav>
+        <div class="mt-20 p-4 bg-stone-50 rounded-lg text-[10px] text-stone-400 border border-stone-100">
+            Esta investigación analiza la resiliencia en edificación mediante el diseño para el desensamblaje y la economía circular.
         </div>
-        <div class="md:w-1/2 w-full bg-stone-200 rounded-2xl p-8 shadow-inner border border-stone-300 relative overflow-hidden flex items-center justify-center min-h-[300px]">
-            <div class="absolute w-64 h-64 border-4 border-dashed border-stone-400 rounded-full animate-[spin_60s_linear_infinite] opacity-50"></div>
-            <div class="z-10 text-center bg-white/80 backdrop-blur p-6 rounded-xl shadow-lg border border-white">
-                <div class="text-4xl mb-2">🔄</div>
-                <h3 class="font-bold text-xl text-stone-800">Resiliencia Estructural</h3>
-                <p class="text-sm text-stone-600 mt-2">Capas desacopladas =<br>Edificios que duran siglos.</p>
-            </div>
-        </div>
-    </header>
+    </aside>
 
-    <!-- Section: Interactive Layers -->
-    <section id="capas" class="py-20 bg-stone-800 text-stone-100">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-12 md:w-2/3">
-                <h2 class="text-3xl font-bold mb-4 text-white">El Modelo de las "6 S" (Shearing Layers)</h2>
-                <p class="text-stone-300 text-lg">
-                    La resiliencia se logra cuando una capa rápida no está incrustada irreversiblemente en una lenta.
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1 px-6 py-12 md:px-16 lg:px-24 max-w-5xl">
+        
+        <!-- SECCIÓN 1: INTRODUCCIÓN -->
+        <section id="intro" class="mb-24 scroll-mt-12">
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-6">REPORTE TÉCNICO</div>
+            <h2 class="text-4xl md:text-5xl font-black mb-8 leading-tight text-stone-900">
+                La Resiliencia como Imperativo en la Edificación Industrializada
+            </h2>
+            <div class="text-content">
+                <p class="drop-cap mb-6">
+                    La industria de la construcción se encuentra en una encrucijada histórica. En un contexto de crisis climática global y agotamiento acelerado de recursos naturales, la forma en que concebimos el ciclo de vida de los edificios debe mutar de un modelo de "consumo y desecho" a uno de "mantenimiento de valor". La **Arquitectura de Capas Desacopladas** no es solo una técnica constructiva; es una estrategia de supervivencia sistémica que utiliza el **Diseño para el Desensamblaje (DfD)** como su motor operativo.
+                </p>
+                <p class="mb-6">
+                    A diferencia de la construcción tradicional, donde los elementos estructurales, las envolventes y las instalaciones se fusionan en masas indisolubles de hormigón y adhesivos químicos, la arquitectura desacoplada propone una independencia física y temporal. Esta independencia permite que cada sistema del edificio evolucione, se repare o se sustituya según su propio ritmo de obsolescencia, sin comprometer la integridad de las demás partes.
                 </p>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-12 items-start">
-                <div class="w-full md:w-1/3 flex flex-col-reverse justify-end gap-1 font-mono text-sm" id="layer-stack"></div>
+            <div class="chart-container">
+                <canvas id="impactoChart"></canvas>
+            </div>
+        </section>
 
-                <div class="w-full md:w-2/3 bg-stone-700 p-8 rounded-2xl shadow-xl border border-stone-600 min-h-[400px]" id="layer-info-panel">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="text-5xl" id="panel-icon">👆</div>
-                        <div>
-                            <h3 class="text-3xl font-bold text-white" id="panel-title">Selecciona una capa</h3>
-                            <p class="text-teal-300 font-medium text-lg mt-1" id="panel-lifespan">Haz clic en los bloques</p>
-                        </div>
-                    </div>
-                    <div class="space-y-6 text-stone-200" id="panel-content">
-                        <p id="panel-desc">Explora la anatomía del DfD seleccionando una de las capas de la izquierda.</p>
-                    </div>
+        <!-- SECCIÓN 2: PROBLEMÁTICA -->
+        <section id="problematica" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6 flex items-center">
+                <span class="mr-3">⚠️</span> La Problemática Sistémica
+            </h3>
+            <div class="text-content space-y-6">
+                <p>
+                    Actualmente, el sector de la edificación es responsable del **39% de las emisiones globales de CO2** relacionadas con la energía y del **36% del uso de energía global**. Sin embargo, el dato más alarmante reside en la gestión de materiales: la construcción consume aproximadamente el **50% de todas las materias primas extraídas** a nivel mundial.
+                </p>
+                <p>
+                    El concepto de "Residuos de Construcción y Demolición" (RCD) es un eufemismo para el fracaso del diseño. En Europa, se generan más de **800 millones de toneladas de RCD al año**. La mayoría de estos materiales terminan en vertederos o en procesos de "downcycling" (reciclaje de bajo valor, como triturar hormigón para bases de carreteras), perdiendo toda la energía embebida y la complejidad técnica con la que fueron fabricados.
+                </p>
+                <div class="technical-box">
+                    <h4 class="font-bold text-blue-800 mb-2 underline">Dato Crítico:</h4>
+                    <p class="text-sm italic">
+                        "Se estima que para el año 2050, el mundo habrá duplicado su stock de edificios. Si mantenemos el modelo de construcción lineal, no habrá suficientes recursos vírgenes en el planeta para satisfacer esta demanda sin un colapso ecológico total."
+                    </p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- NEW SECTION: Gemini AI Integration -->
-    <section id="ai-consultant" class="py-20 bg-white border-y border-stone-200">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- SECCIÓN 3: TEORÍA DE CAPAS -->
+        <section id="teoria-capas" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6">La Teoría de las "Shearing Layers" (Stewart Brand)</h3>
+            <div class="text-content">
+                <p class="mb-8">
+                    En 1994, en su obra <em>How Buildings Learn</em>, Stewart Brand popularizó la idea de que un edificio no es una entidad única, sino una jerarquía de seis capas que cambian a velocidades radicalmente distintas. El desacoplamiento efectivo requiere que las capas más rápidas no se vean obstaculizadas por las más lentas.
+                </p>
                 
-                <!-- Chat Assistant -->
-                <div class="space-y-6">
-                    <div class="p-1">
-                        <h2 class="text-3xl font-bold text-stone-900 mb-2">✨ Consultor DfD Inteligente</h2>
-                        <p class="text-stone-600">Pregunta a Gemini sobre estrategias específicas de desensamblaje o resiliencia para tu proyecto.</p>
+                <!-- Diagrama de capas interactivo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <div id="layer-stack-container" class="space-y-2 p-4 bg-stone-100 rounded-2xl border border-stone-200">
+                        <!-- Generado por JS -->
                     </div>
-                    
-                    <div class="bg-stone-50 border border-stone-200 rounded-2xl overflow-hidden flex flex-col h-[500px]">
-                        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
-                            <div class="bg-teal-100 text-teal-800 p-3 rounded-lg max-w-[80%]">
-                                Hola. Soy tu asistente experto en arquitectura circular. ¿Tienes dudas sobre cómo desacoplar alguna capa de tu edificio?
+                    <div id="layer-info-display" class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-center">
+                        <div class="text-center text-stone-400 italic text-sm">Selecciona una capa del diagrama para ver su análisis técnico</div>
+                    </div>
+                </div>
+
+                <p>
+                    El error fundamental de la construcción moderna es la **fricción entre capas**. Por ejemplo, cuando se empotran tuberías de fontanería (capa de Servicios - 15 años) dentro de muros de carga de hormigón (capa de Estructura - 100 años). Cuando la tubería falla, se debe destruir parte de la estructura, generando un daño desproporcionado y un coste de mantenimiento inasumible.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: METODOLOGÍA DFD -->
+        <section id="dfd-metodo" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6 text-blue-900">Metodología DfD: Diseño para el Desensamblaje</h3>
+            <div class="text-content">
+                <p class="mb-6">
+                    El DfD es un enfoque de diseño que facilita la recuperación futura de componentes y materiales para su reutilización o reciclaje de alto valor. Se rige por la norma **ISO 20887**, que establece los principios para la adaptabilidad y el desensamblaje.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-10">
+                    <div class="p-6 bg-white border border-stone-200 rounded-xl">
+                        <div class="text-xl font-bold mb-2 text-blue-600">01. Jerarquía de Uniones</div>
+                        <p class="text-sm text-stone-500">Uso estricto de uniones mecánicas (tornillería, pernos) sobre uniones químicas (pegamentos, selladores) o térmicas (soldaduras).</p>
+                    </div>
+                    <div class="p-6 bg-white border border-stone-200 rounded-xl">
+                        <div class="text-xl font-bold mb-2 text-blue-600">02. Estandarización</div>
+                        <p class="text-sm text-stone-500">Modularidad dimensional que permite que piezas de diferentes fabricantes sean intercambiables sin ajustes destructivos.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-stone-200 rounded-xl">
+                        <div class="text-xl font-bold mb-2 text-blue-600">03. Accesibilidad</div>
+                        <p class="text-sm text-stone-500">Cualquier componente con un ciclo de vida corto debe ser accesible sin necesidad de retirar componentes de ciclo largo.</p>
+                    </div>
+                    <div class="p-6 bg-white border border-stone-200 rounded-xl">
+                        <div class="text-xl font-bold mb-2 text-blue-600">04. Minimización</div>
+                        <p class="text-sm text-stone-500">Reducción de la variedad de materiales para facilitar la clasificación automática en plantas de recuperación.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: INDUSTRIALIZACIÓN -->
+        <section id="industrializacion" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6">Industrialización 4.0 y DfD</h3>
+            <div class="text-content">
+                <p>
+                    La edificación industrializada (off-site) es el compañero tecnológico natural del DfD. Al fabricar componentes en entornos controlados, podemos alcanzar precisiones milimétricas (tolerancias de ±2mm) imposibles de lograr en una obra tradicional "in situ". Esta precisión es la que permite que los sistemas de ensamblaje en seco funcionen correctamente.
+                </p>
+                <p class="mt-4">
+                    La transición hacia una **Plataforma de Producto** industrializada permite que el edificio se comporte como un mecano de alta tecnología. Esto abre la puerta a nuevos modelos de negocio como el <em>Product-as-a-Service (PaaS)</em>, donde el fabricante mantiene la propiedad de la fachada o el sistema de climatización, encargándose de su actualización y recuperación al final de su uso.
+                </p>
+                <div class="chart-container">
+                    <canvas id="ventajasChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 6: DIGITALIZACIÓN -->
+        <section id="digitalizacion" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6">Digitalización: BIM y Pasaportes de Materiales</h3>
+            <div class="text-content">
+                <p>
+                    Para que el DfD sea efectivo, la información sobre qué materiales hay en el edificio, dónde están y cómo se desmontan debe perdurar décadas. Aquí es donde el **BIM (Building Information Modeling)** se convierte en la base de datos de la economía circular.
+                </p>
+                <div class="technical-box">
+                    <h4 class="font-bold mb-3">Pasaportes de Materiales (MP)</h4>
+                    <p class="text-sm mb-4">Los MPs son conjuntos de datos digitales que describen las características de los productos en los edificios para que puedan ser recuperados y reutilizados.</p>
+                    <ul class="text-sm space-y-2 list-disc pl-5">
+                        <li><strong>Identidad:</strong> Composición química y origen.</li>
+                        <li><strong>Potencial de Reutilización:</strong> Valor residual esperado.</li>
+                        <li><strong>Instrucciones de Desmontaje:</strong> Guía paso a paso para la deconstrucción segura.</li>
+                        <li><strong>Huella de Carbono:</strong> Análisis de ciclo de vida (ACV) embebido.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 7: CASOS DE ESTUDIO -->
+        <section id="cases" class="mb-24 scroll-mt-12 border-t border-stone-200 pt-16">
+            <h3 class="text-2xl font-bold mb-6 text-emerald-800">Análisis de Casos de Éxito</h3>
+            <div class="space-y-12 text-content">
+                <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                    <h4 class="text-xl font-bold mb-4">Gonsi Sócrates (Viladecans)</h4>
+                    <p class="mb-4">
+                        Este edificio industrial de 6.000 m² es un hito de la arquitectura circular. Utiliza una estructura de hormigón industrializado con uniones mecánicas y fachadas de madera desmontables.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="text-sm space-y-3">
+                            <div class="flex justify-between border-b pb-1">
+                                <span class="text-stone-500">Reducción CO2:</span>
+                                <span class="font-bold text-emerald-600">-60%</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-1">
+                                <span class="text-stone-500">Material Circular:</span>
+                                <span class="font-bold text-blue-600">88%</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-1">
+                                <span class="text-stone-500">Residuos Obra:</span>
+                                <span class="font-bold text-stone-800">Mínimos (<5%)</span>
                             </div>
                         </div>
-                        <div class="p-4 border-t border-stone-200 bg-white flex gap-2">
-                            <input type="text" id="chat-input" placeholder="Ej: ¿Cómo desacoplar instalaciones en fachadas?" class="flex-grow px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
-                            <button onclick="sendChatMessage()" id="chat-send-btn" class="bg-teal-700 text-white px-4 py-2 rounded-lg font-bold hover:bg-teal-800 transition-colors">✨</button>
+                        <div class="h-40">
+                            <canvas id="radarGonsi"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Project Auditor -->
-                <div class="bg-stone-100 rounded-3xl p-8 border border-stone-200">
-                    <h3 class="text-2xl font-bold text-stone-900 mb-6">Analizador de Estrategia DfD</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-stone-700 mb-1">Capa a Analizar</label>
-                            <select id="audit-layer" class="w-full p-3 rounded-lg border border-stone-300">
-                                <option value="Estructura">Estructura</option>
-                                <option value="Fachada">Fachada (Skin)</option>
-                                <option value="Servicios">Servicios (Instalaciones)</option>
-                                <option value="Espacio Interior">Espacio Interior</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-stone-700 mb-1">Tipo de Conexión</label>
-                            <input type="text" id="audit-connection" placeholder="Ej: Atornillado, Soldadura, Clips..." class="w-full p-3 rounded-lg border border-stone-300">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-stone-700 mb-1">Materiales Principales</label>
-                            <input type="text" id="audit-materials" placeholder="Ej: Madera CLT, Acero Galv..." class="w-full p-3 rounded-lg border border-stone-300">
-                        </div>
-                        <button onclick="runAudit()" id="audit-btn" class="w-full ai-gradient text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 mt-4">
-                            ✨ Realizar Auditoría de Resiliencia
-                        </button>
-                    </div>
-
-                    <div id="audit-result-container" class="mt-8 hidden animate-fade-in">
-                        <div class="bg-white p-6 rounded-xl border border-teal-200 shadow-sm">
-                            <h4 class="text-teal-800 font-bold mb-2 flex items-center gap-2">
-                                <span class="text-xl">📋</span> Resultado del Análisis
-                            </h4>
-                            <div id="audit-result-text" class="text-stone-700 text-sm leading-relaxed whitespace-pre-wrap">
-                                Analizando datos con Gemini...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Principles Section -->
-    <section id="principios" class="py-20 bg-stone-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-3xl font-bold text-stone-900 mb-4">Principios de Implementación</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                    <div class="w-14 h-14 bg-teal-100 text-teal-700 rounded-xl flex items-center justify-center text-2xl mb-6">🔩</div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">Conexiones Mecánicas</h3>
-                    <p class="text-stone-600">Eliminación de adhesivos químicos. Se priorizan tornillos y ensamblajes en seco.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                    <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-2xl mb-6">🧩</div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">Interfaces Estándar</h3>
-                    <p class="text-stone-600">Componentes modulares Plug & Play con tolerancias estandarizadas.</p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
-                    <div class="w-14 h-14 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-2xl mb-6">📱</div>
-                    <h3 class="text-xl font-bold text-stone-900 mb-3">BIM & Pasaportes</h3>
-                    <p class="text-stone-600">Registros digitales de materiales para su futuro desensamblaje.</p>
+                <div class="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                    <h4 class="text-xl font-bold mb-4">Barcelona Circular (BAC)</h4>
+                    <p class="mb-4">
+                        Una nave industrial rehabilitada mediante el sistema de "cajas dentro de cajas". Los nuevos espacios de oficina son módulos de madera que no tocan la estructura original y pueden ser desmontados sin dejar rastro.
+                    </p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Data Section -->
-    <section id="datos" class="py-20 bg-stone-200">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-stone-900 mb-12">Análisis de Resiliencia Comparativo</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="bg-white p-6 rounded-2xl shadow-sm">
-                    <h3 class="font-bold text-stone-800 mb-4">Ciclo de Vida por Capas (Años)</h3>
-                    <div class="chart-container"><canvas id="lifespanChart"></canvas></div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm">
-                    <h3 class="font-bold text-stone-800 mb-4">Generación de Residuos (100 Años)</h3>
-                    <div class="chart-container"><canvas id="wasteChart"></canvas></div>
+        <!-- SECCIÓN FINAL -->
+        <section id="conclusiones" class="mb-24 border-t border-stone-200 pt-16">
+            <h3 class="text-3xl font-bold mb-8 italic">Conclusiones: El Futuro de la Resiliencia</h3>
+            <div class="text-content space-y-6">
+                <p>
+                    La arquitectura de capas desacopladas no es una opción estética, es una necesidad económica. Los edificios diseñados bajo DfD retienen su valor en el tiempo, funcionando como **Bancos de Materiales** en lugar de pasivos de residuos.
+                </p>
+                <p>
+                    Sin embargo, el reto no es solo técnico. Requiere una transformación del marco legal (que hoy penaliza la reutilización de materiales por falta de certificación) y un cambio cultural en el sector financiero, que debe empezar a valorar los activos inmobiliarios no solo por su renta, sino por su valor residual de materiales.
+                </p>
+                <div class="p-10 bg-stone-900 text-white rounded-[2rem] text-center mt-12">
+                    <p class="text-2xl font-light italic mb-4">"No heredamos la tierra de nuestros ancestros, la tomamos prestada de nuestros hijos. Construir edificios que no se pueden desarmar es robarles su futuro material."</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <footer class="bg-stone-900 text-stone-400 py-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🏗️</span>
-                <span class="font-bold text-xl text-stone-200">DfD Arch Intelligence</span>
-            </div>
-            <p class="text-sm">Impulsado por Gemini 2.5 Flash para arquitectura resiliente.</p>
-        </div>
-    </footer>
+        <footer class="text-center py-10 border-t border-stone-100 text-stone-400 text-xs">
+            © 2024 Investigación Especializada en Construcción Industrializada • Arquitectura Circular • DfD Framework
+        </footer>
+    </main>
+</div>
 
-    <script>
-        // --- GEMINI API CONFIG ---
-        const apiKey = "";
-        const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+<script>
+    // --- LÓGICA DE CAPAS INTERACTIVA ---
+    const layers = [
+        { id: 6, name: 'SITIO (Site)', cycle: 'Eterno', color: '#1A202C', info: 'La ubicación geográfica y los límites legales. Es la única capa inamovible.' },
+        { id: 5, name: 'ESTRUCTURA', cycle: '30-100 años', color: '#2D3748', info: 'Cimentación y carga. Debe ser robusta pero permitir el desacoplamiento de la envolvente.' },
+        { id: 4, name: 'PIEL (Skin)', cycle: '20-40 años', color: '#4A5568', info: 'La fachada. Cambia por degradación climática o mejora de eficiencia energética.' },
+        { id: 3, name: 'SERVICIOS', cycle: '10-20 años', color: '#2B6CB0', info: 'Electricidad, agua, HVAC. Deben ser totalmente accesibles para mantenimiento constante.' },
+        { id: 2, name: 'ESPACIO', cycle: '3-10 años', color: '#48BB78', info: 'Tabiquería interior y techos. Varía según el uso comercial o residencial del espacio.' },
+        { id: 1, name: 'CONTENIDO', cycle: '1-3 años', color: '#ECC94B', info: 'Mobiliario y equipos. Es la capa más dinámica y cercana al usuario.' }
+    ];
 
-        async function callGemini(prompt, systemInstruction = "") {
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-            };
-
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload)
-                    });
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo obtener respuesta.";
-                } catch (e) {
-                    const delay = Math.pow(2, i) * 1000;
-                    await new Promise(res => setTimeout(res, delay));
-                }
-            }
-            return "Error tras múltiples intentos. Por favor, revisa la conexión.";
-        }
-
-        // --- CHAT LOGIC ---
-        const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const chatSendBtn = document.getElementById('chat-send-btn');
-
-        async function sendChatMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            addMessage(text, 'user');
-            chatInput.value = '';
-            chatSendBtn.disabled = true;
-
-            const systemPrompt = "Eres un Consultor Experto en Economía Circular y Arquitectura DfD (Diseño para el Desensamblaje). Responde de forma técnica pero accesible, siempre en español. Enfatiza la resiliencia y la separación de capas (Site, Structure, Skin, Services, Space Plan, Stuff).";
-            
-            const response = await callGemini(text, systemPrompt);
-            addMessage(response, 'ai');
-            chatSendBtn.disabled = false;
-        }
-
-        function addMessage(text, role) {
+    function renderLayers() {
+        const container = document.getElementById('layer-stack-container');
+        layers.forEach(l => {
             const div = document.createElement('div');
-            div.className = role === 'user' 
-                ? "bg-stone-200 text-stone-800 p-3 rounded-lg max-w-[80%] self-end ml-auto" 
-                : "bg-teal-700 text-white p-3 rounded-lg max-w-[80%] self-start";
-            div.textContent = text;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+            div.className = "p-3 rounded-lg text-white font-bold text-xs cursor-pointer hover:translate-x-2 transition-transform shadow-md";
+            div.style.backgroundColor = l.color;
+            div.style.width = `${100 - (6 - l.id) * 5}%`;
+            div.style.margin = "0 auto";
+            div.innerText = l.name;
+            div.onclick = () => showLayerInfo(l);
+            container.appendChild(div);
+        });
+    }
 
-        chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendChatMessage(); });
+    function showLayerInfo(layer) {
+        const display = document.getElementById('layer-info-display');
+        display.innerHTML = `
+            <div class="animate-in fade-in slide-in-from-right-4 duration-300">
+                <h4 class="text-lg font-bold" style="color:${layer.color}">${layer.name}</h4>
+                <div class="text-xs font-bold text-stone-400 mb-4">Ciclo de Renovación: ${layer.cycle}</div>
+                <p class="text-sm text-stone-600 leading-relaxed">${layer.info}</p>
+            </div>
+        `;
+    }
 
-        // --- AUDIT LOGIC ---
-        async function runAudit() {
-            const layer = document.getElementById('audit-layer').value;
-            const connection = document.getElementById('audit-connection').value;
-            const materials = document.getElementById('audit-materials').value;
-            
-            if (!connection || !materials) {
-                alertCustom("Por favor completa los campos de Conexión y Materiales.");
-                return;
-            }
+    // --- GRÁFICOS ---
+    window.onload = function() {
+        renderLayers();
 
-            const btn = document.getElementById('audit-btn');
-            const resultContainer = document.getElementById('audit-result-container');
-            const resultText = document.getElementById('audit-result-text');
-
-            btn.disabled = true;
-            btn.textContent = "Analizando con IA...";
-            resultContainer.classList.remove('hidden');
-            resultText.textContent = "Generando informe detallado de resiliencia...";
-
-            const prompt = `Realiza una auditoría DfD para la capa "${layer}". 
-            Sistema constructivo propuesto: Conexión mediante "${connection}" y materiales "${materials}". 
-            Evalúa: 
-            1. Grado de reversibilidad (0-100%).
-            2. Impacto en la resiliencia del edificio a 50 años.
-            3. Recomendaciones de mejora para facilitar el desensamblaje.
-            Sé breve y usa puntos clave.`;
-
-            const systemPrompt = "Eres un auditor de certificación de economía circular para arquitectura industrializada.";
-            
-            const auditResult = await callGemini(prompt, systemPrompt);
-            resultText.textContent = auditResult;
-            btn.disabled = false;
-            btn.innerHTML = "✨ Realizar Auditoría de Resiliencia";
-        }
-
-        function alertCustom(msg) {
-            const el = document.createElement('div');
-            el.className = "fixed bottom-4 right-4 bg-amber-500 text-white p-4 rounded-lg shadow-2xl z-[100] animate-bounce";
-            el.textContent = msg;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
-        }
-
-        // --- EXISTING LAYER DATA & LOGIC ---
-        const layersData = [
-            { id: 'site', name: 'Site', icon: '🌍', lifespan: 'Eterno', colorClass: 'bg-stone-950', textClass: 'text-stone-300', desc: 'Ubicación física permanente.', prob: 'Ignorar el clima fuerza a los servicios.', dfd: 'Cimentaciones reversibles.' },
-            { id: 'structure', name: 'Structure', icon: '🏛️', lifespan: '30 - 300 años', colorClass: 'bg-stone-800', textClass: 'text-stone-300', desc: 'Cimientos y carga duradera.', prob: 'Hormigón monolítico irreparable.', dfd: 'Acero o CLT atornillado.' },
-            { id: 'skin', name: 'Skin', icon: '🏢', lifespan: '20 - 50 años', colorClass: 'bg-stone-600', textClass: 'text-stone-100', desc: 'Fachadas y cubiertas.', prob: 'Acabados adheridos que se pican.', dfd: 'Fachadas ventiladas modulares.' },
-            { id: 'services', name: 'Services', icon: '⚙️', lifespan: '7 - 15 años', colorClass: 'bg-teal-700', textClass: 'text-white', desc: 'Instalaciones tecnológicas.', prob: 'Tuberías empotradas en muros.', dfd: 'Suelos y techos registrables.' },
-            { id: 'space', name: 'Space Plan', icon: '📏', lifespan: '3 - 30 años', colorClass: 'bg-emerald-600', textClass: 'text-white', desc: 'Distribución interior.', prob: 'Tabiques de ladrillo y yeso.', dfd: 'Tabiquería seca o móvil.' },
-            { id: 'stuff', name: 'Stuff', icon: '🪑', lifespan: '0 - 10 años', colorClass: 'bg-amber-500', textClass: 'text-stone-900', desc: 'Mobiliario y equipos.', prob: 'Muebles fijos no reutilizables.', dfd: 'Mobiliario independiente.' }
-        ];
-
-        const stackContainer = document.getElementById('layer-stack');
-        let activeLayerId = 'services';
-
-        function renderLayerStack() {
-            stackContainer.innerHTML = '';
-            [...layersData].forEach((layer) => {
-                const heightClass = layer.id === 'site' ? 'h-8' : (layer.id === 'structure' ? 'h-16' : 'h-12');
-                const active = layer.id === activeLayerId;
-                const block = document.createElement('div');
-                block.className = `layer-block ${layer.colorClass} ${layer.textClass} flex items-center justify-between px-4 rounded shadow-sm ${heightClass} ${active ? 'opacity-100 scale-105 z-10 font-bold border-l-4 border-white' : 'opacity-80'}`;
-                block.innerHTML = `<span>${layer.icon} ${layer.name}</span>`;
-                block.onclick = () => { activeLayerId = layer.id; renderLayerStack(); updateInfoPanel(layer); };
-                stackContainer.appendChild(block);
-            });
-        }
-
-        function updateInfoPanel(layer) {
-            document.getElementById('panel-icon').textContent = layer.icon;
-            document.getElementById('panel-title').textContent = layer.name;
-            document.getElementById('panel-lifespan').textContent = `Vida Útil: ${layer.lifespan}`;
-            document.getElementById('panel-content').innerHTML = `
-                <div class="bg-stone-800 p-4 rounded-lg border-l-4 border-teal-500 mb-4"><p>${layer.desc}</p></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-stone-800 p-3 rounded"><strong>Problema:</strong> ${layer.prob}</div>
-                    <div class="bg-stone-800 p-3 rounded text-teal-300"><strong>DfD:</strong> ${layer.dfd}</div>
-                </div>`;
-        }
-
-        renderLayerStack();
-        updateInfoPanel(layersData.find(l => l.id === activeLayerId));
-
-        // --- CHARTS ---
-        new Chart(document.getElementById('lifespanChart'), {
+        // Chart 1: Impacto
+        new Chart(document.getElementById('impactoChart'), {
             type: 'bar',
             data: {
-                labels: ['Stuff', 'Space', 'Services', 'Skin', 'Structure', 'Site'],
-                datasets: [{ data: [5, 15, 12, 35, 150, 500], backgroundColor: ['#f59e0b', '#059669', '#0f766e', '#57534e', '#292524', '#0c0a09'] }]
+                labels: ['Uso Energía', 'Emisiones CO2', 'Materias Primas', 'Residuos Generados'],
+                datasets: [{
+                    label: '% Atribuido a Construcción',
+                    data: [36, 39, 50, 40],
+                    backgroundColor: '#2B6CB0',
+                    borderRadius: 10
+                }]
             },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Huella Ambiental Global del Sector', font: { size: 16 } },
+                    legend: { display: false }
+                }
+            }
         });
 
-        new Chart(document.getElementById('wasteChart'), {
+        // Chart 2: Ventajas Industrialización
+        new Chart(document.getElementById('ventajasChart'), {
             type: 'line',
             data: {
-                labels: [0, 20, 40, 60, 80, 100],
-                datasets: [
-                    { label: 'Tradicional', data: [0, 30, 90, 150, 220, 500], borderColor: '#57534e', fill: true, backgroundColor: 'rgba(87,83,78,0.1)' },
-                    { label: 'DfD + AI', data: [0, 5, 12, 18, 22, 30], borderColor: '#0f766e', fill: true, backgroundColor: 'rgba(15,118,110,0.2)' }
-                ]
+                labels: ['Fase Diseño', 'Fabricación', 'Logística', 'Montaje', 'Mantenimiento'],
+                datasets: [{
+                    label: 'Eficiencia DfD vs Tradicional',
+                    data: [10, 30, 45, 80, 95],
+                    borderColor: '#48BB78',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(72, 187, 120, 0.1)'
+                }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Curva de Eficiencia en Ciclo de Vida' }
+                }
+            }
         });
-    </script>
+
+        // Chart 3: Radar Gonsi
+        new Chart(document.getElementById('radarGonsi'), {
+            type: 'radar',
+            data: {
+                labels: ['Circularidad', 'Energía', 'Social', 'Económico', 'Salud'],
+                datasets: [{
+                    label: 'Puntuación Gonsi Sócrates',
+                    data: [90, 85, 75, 80, 95],
+                    backgroundColor: 'rgba(43, 108, 176, 0.2)',
+                    borderColor: '#2B6CB0',
+                    pointBackgroundColor: '#2B6CB0'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: { beginAtZero: true, max: 100, ticks: { display: false } }
+                }
+            }
+        });
+    };
+
+    // --- INTERACCIÓN SCROLLSPY ---
+    const links = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+        let current = "";
+        document.querySelectorAll('section').forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+        links.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
