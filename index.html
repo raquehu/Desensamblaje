@@ -3,283 +3,1140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arquitectura de Capas Desacopladas</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Arquitectura de Capas Desacopladas · 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Paleta extraída de la imagen */
-  --bg-cream: #f4f1e6;
-  --green-dark: #627254;
-  --green-mid: #a5b696;
-  --green-light: #d6ddc2;
-  --text-dark: #2c2c2a;
-  --text-light: #5a5a55;
-  --border-color: #e3dec9;
-  
-  --serif: 'Instrument Serif', Georgia, serif;
-  --sans: 'Inter', system-ui, sans-serif;
-  
-  --r-card: 24px;
-  --r-pill: 100px;
+  --cream:   #ece7da;
+  --cream2:  #e4dfd2;
+  --cream3:  #f5f1ea;
+  --white:   #fdfcfa;
+  --sage:    #6b8060;
+  --sage-d:  #4e6145;
+  --sage-m:  #839972;
+  --sage-l:  #b4c8a8;
+  --sage-bg: #dce8d4;
+  --sage-card:#7a9168;
+  --ink:     #1e2018;
+  --ink2:    #4a4e3e;
+  --ink3:    #8a8e7e;
+  --border:  rgba(78,97,69,0.15);
+  --serif:   'Cormorant Garamond', Georgia, serif;
+  --sans:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:    'JetBrains Mono', monospace;
+  --r:       16px;
+  --r2:      24px;
+  --r3:      32px;
+  --r4:      40px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg-cream);
-  color: var(--text-dark);
+  background: var(--cream);
+  color: var(--ink);
   font-family: var(--sans);
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── LAYOUT ── */
-.wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
-
-/* ── HEADER VISUAL (Imitando la imagen superior) ── */
-.top-visual {
-  height: 250px;
-  background-color: var(--green-dark);
-  border-bottom-left-radius: 80px;
-  border-bottom-right-radius: 80px;
-  margin-bottom: 60px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 40px;
-  overflow: hidden;
-  position: relative;
-}
-.top-visual::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+/* ─── PROGRESS ─── */
+#pgbar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--sage-d); width: 0%;
+  z-index: 300; transition: width 0.1s;
+  border-radius: 0 2px 2px 0;
 }
 
-/* ── NAVEGACIÓN ── */
+/* ─── NAV ─── */
 nav {
-  position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-  background: rgba(244, 241, 230, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: var(--r-pill);
-  padding: 8px 16px;
-  display: flex; gap: 8px;
-  z-index: 100;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  background: rgba(253,252,250,0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 7px 16px;
+  display: flex; gap: 2px;
+  z-index: 200;
+  box-shadow: 0 2px 20px rgba(30,32,24,0.08);
+  max-width: calc(100vw - 28px);
+  flex-wrap: wrap; justify-content: center;
 }
 .ni {
-  font-size: 12px; font-weight: 500;
-  color: var(--text-dark); text-decoration: none;
-  padding: 6px 14px; border-radius: var(--r-pill);
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--ink3);
+  padding: 5px 11px; border-radius: 30px;
+  text-decoration: none; transition: all 0.2s; white-space: nowrap;
+}
+.ni:hover, .ni.active { background: var(--sage-bg); color: var(--sage-d); font-weight: 500; }
+
+/* ─── HERO BANNER ─── */
+.hero-banner {
+  width: 100%;
+  padding: 16px 20px 0;
+}
+.hero-banner-inner {
+  width: 100%;
+  height: 260px;
+  border-radius: var(--r4);
+  background: linear-gradient(160deg, #8fa87a 0%, #6b8060 40%, #4e6145 100%);
+  overflow: hidden;
+  position: relative;
+  display: flex; align-items: flex-end;
+}
+.hero-banner-inner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 20% 110%, rgba(255,255,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% -10%, rgba(255,255,255,0.08) 0%, transparent 50%);
+}
+.hero-banner-inner::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, rgba(78,97,69,0.4));
+}
+.hero-leaf {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+}
+.hero-leaf1 { width: 300px; height: 300px; background: #c8e0b8; top: -80px; right: 60px; }
+.hero-leaf2 { width: 180px; height: 180px; background: #b4c8a8; bottom: -40px; left: 40px; }
+.hero-leaf3 { width: 100px; height: 100px; background: #d4e8c4; top: 40px; left: 200px; }
+
+.hero-banner-text {
+  position: relative; z-index: 2;
+  padding: 28px 36px; color: white;
+}
+.hero-banner-text .tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(255,255,255,0.7);
+  margin-bottom: 6px;
+}
+.hero-banner-text h1 {
+  font-family: var(--serif); font-size: 28px; font-weight: 400;
+  font-style: italic; line-height: 1.2; color: white;
+}
+
+/* ─── HERO MAIN ─── */
+.hero-main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 60px 28px 20px;
+  text-align: center;
+}
+.hero-main h1 {
+  font-family: var(--serif);
+  font-size: clamp(46px, 6.5vw, 84px);
+  font-weight: 400; line-height: 1.05;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.hero-main h1 em { font-style: italic; color: var(--sage-d); }
+.hero-main p {
+  font-size: 16px; color: var(--ink3); max-width: 520px;
+  margin: 0 auto 44px; line-height: 1.8; font-weight: 400;
+}
+
+/* hero pill */
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 30px; padding: 6px 16px;
+  font-family: var(--mono); font-size: 9px;
+  color: var(--sage-d); letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 28px;
+}
+.hero-pill::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--sage); animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ─── STAT CARDS (hero) ─── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 760px;
+  margin: 0 auto 16px;
+}
+.sc {
+  background: var(--white);
+  border: 1px solid rgba(78,97,69,0.1);
+  border-radius: var(--r2);
+  padding: 20px 16px 18px;
+  transition: all 0.25s;
+  cursor: default;
+}
+.sc:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(30,32,24,0.08); }
+.sc:nth-child(2) { background: var(--sage-card); }
+.sc:nth-child(2) .sc-n, .sc:nth-child(2) .sc-l { color: white; }
+.sc:nth-child(2) .sc-l { color: rgba(255,255,255,0.75); }
+.sc-n {
+  font-family: var(--serif); font-size: 40px; font-weight: 400;
+  color: var(--sage-d); line-height: 1; margin-bottom: 8px;
+}
+.sc-l { font-size: 11px; color: var(--ink3); line-height: 1.4; font-weight: 400; }
+
+/* ─── SECTION WRAPPER ─── */
+.wrap { max-width: 820px; margin: 0 auto; padding: 0 28px; }
+
+/* ─── SECTION BLOCK ─── */
+.sec-block {
+  padding: 72px 0 0;
+}
+.sec-block + .sec-block { margin-top: 0; }
+
+.sec-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--sage-d);
+  margin-bottom: 10px;
+}
+.sec-label::before { content: ''; width: 14px; height: 1px; background: var(--sage); }
+
+.sec-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4.5vw, 52px);
+  font-weight: 400; line-height: 1.1;
+  margin-bottom: 22px; color: var(--ink);
+  text-align: center;
+}
+.sec-title em { font-style: italic; color: var(--sage-d); }
+.sec-title.left { text-align: left; }
+
+.sec-intro {
+  font-size: 15px; color: var(--ink3); line-height: 1.8;
+  margin-bottom: 32px; font-weight: 400;
+}
+.sec-intro strong { color: var(--ink); font-weight: 600; }
+.sec-intro em { font-style: italic; color: var(--sage-d); }
+
+h3 {
+  font-family: var(--serif); font-size: 26px; font-weight: 400;
+  color: var(--ink); margin: 36px 0 10px;
+}
+h3.center { text-align: center; }
+h4 { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink3); margin: 24px 0 10px; }
+
+p { color: var(--ink2); margin-bottom: 14px; font-size: 15px; font-weight: 400; line-height: 1.78; }
+p strong { color: var(--ink); font-weight: 600; }
+p em { color: var(--sage-d); font-style: italic; }
+
+/* ─── DATA BOXES ─── */
+.dboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap: 10px; margin: 28px 0;
+}
+.db {
+  background: var(--white); border-radius: var(--r3);
+  padding: 22px 16px; text-align: center;
+  border: 1px solid rgba(78,97,69,0.1);
+  transition: all 0.25s;
+}
+.db:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,32,24,0.07); }
+.db:nth-child(odd) { background: var(--sage-bg); }
+.db-n {
+  font-family: var(--serif); font-size: 44px; font-weight: 400;
+  color: var(--sage-d); line-height: 1; margin-bottom: 8px;
+}
+.db-l { font-size: 12px; color: var(--ink3); line-height: 1.4; }
+
+/* ─── PULLQUOTE ─── */
+.pullq {
+  margin: 36px 0;
+  padding: 34px 40px;
+  background: var(--white);
+  border-radius: var(--r3);
+  text-align: center;
+  position: relative;
+}
+.pullq::before {
+  content: '\201C';
+  font-family: var(--serif); font-size: 120px; line-height: 0.6;
+  color: var(--sage-l); position: absolute; top: 28px; left: 28px;
+  font-style: italic;
+}
+.pullq-t {
+  font-family: var(--serif); font-size: clamp(18px, 2.8vw, 26px);
+  font-style: italic; line-height: 1.55; color: var(--ink);
+  margin-bottom: 16px; position: relative; z-index: 1;
+}
+.pullq-c { font-family: var(--mono); font-size: 9px; color: var(--ink3); letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* ─── HIGHLIGHT BOX ─── */
+.hbox {
+  background: var(--sage-bg);
+  border-radius: var(--r2);
+  padding: 22px 28px; margin: 24px 0;
+  border-left: 4px solid var(--sage);
+}
+.hbox-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--sage-d); margin-bottom: 8px; font-weight: 500; }
+.hbox p { font-size: 14px; margin-bottom: 0; color: var(--ink2); }
+
+/* ─── STEP CARDS (3-col) ─── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin: 28px 0;
+}
+@media(max-width:600px){ .steps{grid-template-columns:1fr;} }
+.step {
+  background: var(--sage-card);
+  border-radius: var(--r3);
+  padding: 26px 22px;
+  color: white; position: relative; overflow: hidden;
+  transition: transform 0.25s;
+}
+.step:hover { transform: translateY(-3px); }
+.step:nth-child(even) { background: var(--white); }
+.step:nth-child(even) .step-n,
+.step:nth-child(even) .step-t,
+.step:nth-child(even) .step-d { color: var(--ink); }
+.step:nth-child(even) .step-d { color: var(--ink3); }
+.step::after {
+  content: '';
+  position: absolute; bottom: -20px; right: -20px;
+  width: 80px; height: 80px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+.step-ico {
+  font-size: 28px; margin-bottom: 14px; display: block;
+}
+.step-n { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+.step-t { font-family: var(--serif); font-size: 20px; font-weight: 400; color: white; margin-bottom: 8px; }
+.step-d { font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.65; }
+
+/* ─── PRINCIPLE CARDS ─── */
+.pcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 10px; margin: 24px 0;
+}
+.pc {
+  background: var(--white);
+  border-radius: var(--r2);
+  padding: 22px 20px;
+  border: 1px solid rgba(78,97,69,0.1);
+  transition: all 0.25s;
+}
+.pc:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,32,24,0.07); border-color: var(--sage-l); }
+.pc:nth-child(4n+1) { background: var(--sage-bg); }
+.pc-num { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--sage-d); margin-bottom: 8px; }
+.pc-t { font-family: var(--serif); font-size: 19px; font-weight: 400; color: var(--ink); margin-bottom: 6px; }
+.pc-d { font-size: 13px; color: var(--ink3); line-height: 1.65; font-weight: 400; }
+
+/* ─── LIST ROWS (like providers) ─── */
+.list-rows { margin: 24px 0; display: flex; flex-direction: column; gap: 2px; }
+.list-row {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--white);
+  padding: 16px 20px;
+  border-radius: var(--r);
+  border: 1px solid rgba(78,97,69,0.08);
+  transition: all 0.2s; cursor: pointer;
+}
+.list-row:first-child { border-radius: var(--r2) var(--r2) var(--r) var(--r); }
+.list-row:last-child { border-radius: var(--r) var(--r) var(--r2) var(--r2); }
+.list-row:hover, .list-row.active { background: var(--sage-card); }
+.list-row:hover .lr-title, .list-row.active .lr-title { color: white; }
+.list-row:hover .lr-sub, .list-row.active .lr-sub { color: rgba(255,255,255,0.7); }
+.list-row:hover .lr-badge, .list-row.active .lr-badge { background: rgba(255,255,255,0.15); color: white; border-color: transparent; }
+.list-row:hover .lr-arr, .list-row.active .lr-arr { color: white; }
+.lr-num { font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--sage-l); min-width: 32px; flex-shrink: 0; }
+.lr-body { flex: 1; }
+.lr-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.3; transition: color 0.2s; }
+.lr-sub { font-size: 12px; color: var(--ink3); line-height: 1.5; transition: color 0.2s; font-weight: 400; }
+.lr-badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 3px 10px; color: var(--sage-d); white-space: nowrap;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.lr-arr { color: var(--ink3); font-size: 12px; flex-shrink: 0; transition: color 0.2s; }
+
+/* ─── ACCORDION (layers & barriers) ─── */
+.accordion { display: flex; flex-direction: column; gap: 6px; margin: 24px 0; }
+.acc {
+  background: var(--white);
+  border-radius: var(--r2);
+  overflow: hidden; cursor: pointer;
+  border: 1px solid rgba(78,97,69,0.1);
   transition: all 0.2s;
 }
-.ni:hover, .ni.active { background: var(--green-dark); color: #fff; }
+.acc:hover, .acc.open { border-color: var(--sage-l); }
+.acc.open { box-shadow: 0 4px 20px rgba(78,97,69,0.1); }
+.acc-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; user-select: none;
+}
+.acc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.acc-ico { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+.acc-title { font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; }
+.acc-badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 3px 10px; color: var(--ink3); white-space: nowrap;
+  transition: all 0.2s;
+}
+.acc.open .acc-badge { background: var(--sage-bg); border-color: var(--sage-l); color: var(--sage-d); }
+.acc-arr { color: var(--ink3); transition: transform 0.3s; font-size: 10px; flex-shrink: 0; }
+.acc.open .acc-arr { transform: rotate(90deg); color: var(--sage-d); }
+.acc-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1); }
+.acc.open .acc-body { max-height: 220px; }
+.acc-inner {
+  padding: 0 20px 18px 54px;
+  font-size: 14px; color: var(--ink3); line-height: 1.75;
+  border-top: 1px solid rgba(78,97,69,0.08); padding-top: 14px; font-weight: 400;
+}
 
-/* ── SECCIONES Y TEXTOS ── */
-section { padding: 60px 0; }
-.sec-h {
-  font-family: var(--serif); 
-  font-size: 42px; 
-  font-weight: 400; 
-  text-align: center;
-  margin-bottom: 16px; 
-  color: var(--text-dark);
+/* ─── TWO-COL FORMAT CARDS (like therapy formats) ─── */
+.format-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin: 24px 0;
 }
-.sec-sub {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto 40px;
-  color: var(--text-light);
-  font-size: 14px;
+@media(max-width:580px){ .format-cards{grid-template-columns:1fr;} }
+.fc {
+  border-radius: var(--r3);
+  padding: 28px 26px;
+  position: relative; overflow: hidden;
+  min-height: 180px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  transition: transform 0.25s;
+}
+.fc:hover { transform: translateY(-3px); }
+.fc.light { background: var(--white); border: 1px solid rgba(78,97,69,0.1); }
+.fc.dark { background: var(--sage-card); }
+.fc.dark .fc-t, .fc.dark .fc-d, .fc.dark .fc-label { color: white; }
+.fc.dark .fc-d { color: rgba(255,255,255,0.75); }
+.fc.dark .fc-label { color: rgba(255,255,255,0.65); }
+.fc.dark .fc-ico { color: rgba(255,255,255,0.9); }
+.fc-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--sage-d); margin-bottom: 10px; }
+.fc-t { font-family: var(--serif); font-size: 28px; font-weight: 400; color: var(--ink); margin-bottom: 8px; line-height: 1.15; }
+.fc-d { font-size: 13px; color: var(--ink3); line-height: 1.65; flex: 1; margin-bottom: 16px; font-weight: 400; }
+.fc-ico {
+  font-size: 32px; position: absolute;
+  top: 22px; right: 22px; color: var(--sage-l); opacity: 0.6;
+}
+.fc-orb {
+  position: absolute; border-radius: 50%;
+  bottom: -40px; right: -30px;
+  width: 120px; height: 120px;
+  background: rgba(255,255,255,0.08);
+}
+.fc-tag {
+  display: inline-block; border-radius: 20px; padding: 3px 12px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  text-transform: uppercase; align-self: flex-start;
+  background: var(--sage-bg); color: var(--sage-d);
+  margin-top: auto;
+}
+.fc.dark .fc-tag { background: rgba(255,255,255,0.15); color: white; }
+
+/* ─── TABLE ─── */
+.tbl {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  margin: 24px 0; border-radius: var(--r2); overflow: hidden;
+  border: 1px solid rgba(78,97,69,0.1);
+}
+.tbl th {
+  background: var(--cream2); font-family: var(--mono); font-size: 9px;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 13px 16px; text-align: left; color: var(--ink3); font-weight: 500;
+}
+.tbl td {
+  padding: 12px 16px; border-top: 1px solid rgba(78,97,69,0.07);
+  font-size: 14px; color: var(--ink2); vertical-align: top;
+}
+.tbl tr:hover td { background: rgba(220,232,212,0.3); }
+.bad { color: #b84040; }
+.good { color: var(--sage-d); font-weight: 500; }
+
+/* ─── CASE STUDIES ─── */
+.cases { display: flex; flex-direction: column; gap: 10px; margin: 24px 0; }
+.cs { border-radius: var(--r3); overflow: hidden; border: 1px solid rgba(78,97,69,0.1); }
+.cs-head {
+  padding: 22px 26px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+}
+.cs-head.g1 { background: var(--sage-bg); }
+.cs-head.g2 { background: #dce4d4; }
+.cs-head.g3 { background: #d8e0e8; }
+.cs-head.g4 { background: var(--cream2); }
+.cs-ht { font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--ink); }
+.cs-hl { font-family: var(--mono); font-size: 9px; color: var(--ink3); letter-spacing: 1px; margin-top: 3px; }
+.cs-tag {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+  background: rgba(255,255,255,0.6); border: 1px solid var(--sage-l);
+  border-radius: 20px; padding: 4px 12px; color: var(--sage-d);
+}
+.cs-body { background: var(--white); padding: 22px 26px; }
+.cs-body p { font-size: 14px; }
+.cs-metrics {
+  display: flex; gap: 28px; flex-wrap: wrap;
+  margin-top: 18px; padding-top: 18px;
+  border-top: 1px solid rgba(78,97,69,0.1);
+}
+.cm-n { font-family: var(--serif); font-size: 32px; font-weight: 400; color: var(--sage-d); line-height: 1; }
+.cm-l { font-family: var(--mono); font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+/* ─── ROADMAP BARS ─── */
+.roadmap { display: flex; flex-direction: column; gap: 6px; margin: 28px 0; }
+.rm-row { display: flex; align-items: center; gap: 14px; }
+.rm-yr { font-family: var(--mono); font-size: 9px; color: var(--ink3); width: 76px; text-align: right; flex-shrink: 0; letter-spacing: 1px; }
+.rm-track { flex: 1; background: rgba(78,97,69,0.07); border-radius: 8px; height: 34px; overflow: hidden; }
+.rm-bar {
+  height: 100%; border-radius: 7px;
+  display: flex; align-items: center; padding: 0 14px;
+  font-family: var(--mono); font-size: 9px; white-space: nowrap; overflow: hidden;
+  width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  color: white; letter-spacing: 0.5px;
 }
 
-/* ── TARJETAS ESTILO "FEW STEPS" ── */
-.dbox-grid {
-  display: grid; 
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px; 
-  margin-bottom: 40px;
-}
-.dbox {
-  border-radius: var(--r-card);
-  padding: 30px 24px;
-  position: relative;
-  display: flex; flex-direction: column;
-  min-height: 220px;
-  color: var(--text-dark);
-  text-decoration: none;
-}
-/* Colores de la imagen para las 3 tarjetas */
-.dbox:nth-child(1) { background: var(--green-dark); color: #fff; }
-.dbox:nth-child(2) { background: var(--green-mid); }
-.dbox:nth-child(3) { background: var(--green-light); }
+/* ─── METRICS TABLE ─── */
+.mt-wrap { border-radius: var(--r2); overflow: hidden; border: 1px solid rgba(78,97,69,0.1); margin: 24px 0; }
+.mt { width: 100%; border-collapse: collapse; }
+.mt th { background: var(--cream2); font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 13px 16px; text-align: left; color: var(--ink3); font-weight: 500; }
+.mt td { padding: 12px 16px; border-top: 1px solid rgba(78,97,69,0.08); font-size: 14px; color: var(--ink2); }
+.mt tr:hover td { background: rgba(220,232,212,0.25); }
 
-.dbox-icon {
-  font-size: 40px; margin-bottom: auto; opacity: 0.8;
-}
-.dbox-t {
-  font-family: var(--serif); font-size: 24px; line-height: 1.1; margin-bottom: 8px;
-}
-.dbox-d { font-size: 12px; line-height: 1.4; opacity: 0.9; }
+/* ─── PHASE CARDS ─── */
+.phases { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 24px 0; }
+@media(max-width:620px){ .phases{ grid-template-columns:1fr; } }
+.ph { border-radius: var(--r3); overflow: hidden; border: 1px solid rgba(78,97,69,0.1); }
+.ph-band { padding: 16px 20px; }
+.ph-band.p1 { background: var(--sage-bg); }
+.ph-band.p2 { background: #c8dac0; }
+.ph-band.p3 { background: var(--sage-d); }
+.ph-band-label { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--sage-d); }
+.ph-band.p3 .ph-band-label { color: rgba(255,255,255,0.7); }
+.ph-body { padding: 18px 20px; background: var(--white); }
+.ph-t { font-family: var(--serif); font-size: 20px; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
+.ph-d { font-size: 13px; color: var(--ink3); line-height: 1.65; font-weight: 400; }
 
-/* Botón flecha esquina */
-.arrow-btn {
-  position: absolute; bottom: 20px; right: 20px;
-  width: 28px; height: 28px;
-  background: rgba(255,255,255,0.3);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: bold;
+/* ─── SOLUTIONS ─── */
+.sols {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+  gap: 10px; margin: 24px 0;
 }
-.dbox:nth-child(1) .arrow-btn { background: #fff; color: var(--green-dark); }
-.dbox:nth-child(2) .arrow-btn, .dbox:nth-child(3) .arrow-btn { background: rgba(0,0,0,0.1); color: var(--text-dark); }
+.sol {
+  background: var(--white); border: 1px solid rgba(78,97,69,0.1);
+  border-radius: var(--r3); padding: 22px 20px;
+  transition: all 0.25s; position: relative; overflow: hidden;
+}
+.sol::after {
+  content: attr(data-n);
+  position: absolute; bottom: -6px; right: 10px;
+  font-family: var(--serif); font-size: 70px; font-weight: 400;
+  color: rgba(107,128,96,0.06); line-height: 1; pointer-events: none;
+}
+.sol:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(30,32,24,0.08); border-color: var(--sage-l); }
+.sol:nth-child(3n+1) { background: var(--sage-bg); }
+.sol:nth-child(3n+1):hover { background: var(--white); }
+.sol-tag {
+  display: inline-block; border-radius: 20px; padding: 3px 10px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.sol-tag.tech { background: #dce8d4; color: var(--sage-d); }
+.sol-tag.policy { background: #e8e0d4; color: #7a6040; }
+.sol-tag.market { background: #d8e0e8; color: #3a5070; }
+.sol-tag.edu { background: #e4d8e4; color: #603060; }
+.sol-t { font-family: var(--serif); font-size: 18px; font-weight: 400; margin-bottom: 8px; color: var(--ink); }
+.sol-d { font-size: 13px; color: var(--ink3); line-height: 1.65; font-weight: 400; }
 
-/* ── LISTA ESTILO "MEET OUR PROVIDERS" ── */
-.list-container {
-  border-top: 1px solid var(--border-color);
-  margin-top: 20px;
+/* ─── DIVIDER ─── */
+.divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(78,97,69,0.15), transparent);
+  margin: 64px 0 0;
 }
-.list-item {
-  display: flex; align-items: center; gap: 20px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
-  transition: background 0.2s;
-}
-.list-item:hover { background: rgba(0,0,0,0.02); }
-.list-item.highlight {
-  background: var(--green-dark); color: #fff;
-  border-radius: 12px; padding: 16px; border: none;
-  margin: 8px 0;
-}
-.li-avatar {
-  width: 48px; height: 48px; border-radius: 8px; background: var(--green-mid);
-  flex-shrink: 0;
-}
-.li-content { flex: 1; display: flex; gap: 20px; align-items: center; }
-.li-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; width: 140px; }
-.li-desc { font-size: 13px; color: var(--text-light); }
-.list-item.highlight .li-desc { color: rgba(255,255,255,0.8); }
 
-/* ── TARJETAS GRANDES ESTILO "THERAPY FORMATS" ── */
-.formats-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;
-}
-.format-card {
-  border-radius: var(--r-card); padding: 40px 30px;
-  position: relative; min-height: 280px; display: flex; flex-direction: column;
-}
-.fc-1 { background: var(--bg-cream); border: 1px solid var(--border-color); }
-.fc-2 { background: var(--green-dark); color: #fff; }
+/* ─── FADE IN ─── */
+.fade { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.fade.in { opacity: 1; transform: none; }
 
-.fc-icon { font-size: 50px; text-align: right; margin-bottom: auto; opacity: 0.7; }
-.fc-t { font-family: var(--serif); font-size: 32px; margin-bottom: 12px; }
-.fc-d { font-size: 13px; max-width: 80%; }
-.format-card .arrow-btn { bottom: 30px; right: 30px; }
-.fc-1 .arrow-btn { background: var(--green-dark); color: #fff; }
-.fc-2 .arrow-btn { background: #fff; color: var(--green-dark); }
+/* ─── FOOTER ─── */
+footer {
+  background: var(--sage-d); color: rgba(255,255,255,0.7);
+  padding: 40px 28px; text-align: center; margin-top: 80px;
+  border-radius: 32px 32px 0 0;
+}
+.fi { max-width: 820px; margin: 0 auto; }
+footer .ft { font-family: var(--serif); font-size: 22px; font-weight: 400; font-style: italic; color: white; margin-bottom: 12px; }
+footer p { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.5); letter-spacing: 1px; margin-bottom: 4px; }
 
-@media(max-width: 768px) {
-  .dbox-grid, .formats-grid { grid-template-columns: 1fr; }
-  .li-content { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .top-visual { height: 150px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
+/* ─── BACK TO TOP ─── */
+#btt {
+  position: fixed; bottom: 24px; right: 24px; z-index: 100;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--sage-d); color: white;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; border: none;
+  opacity: 0; transform: scale(0.7); transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(78,97,69,0.3);
+}
+#btt.show { opacity: 1; transform: scale(1); }
+#btt:hover { background: var(--sage-m); }
+
+@media(max-width:640px){
+  nav { padding: 6px 10px; }
+  .ni { font-size: 8px; padding: 4px 8px; }
+  .wrap { padding: 0 18px; }
+  .stat-row { grid-template-columns: repeat(2,1fr); }
+  .acc-inner { padding-left: 20px; }
+  .hero-banner { padding: 12px 14px 0; }
+  .hero-banner-inner { height: 180px; }
 }
 </style>
 </head>
 <body>
+<div id="pgbar"></div>
 
+<!-- NAV -->
 <nav>
-  <a href="#s1" class="ni">Inicio</a>
-  <a href="#s2" class="ni">Profesionales</a>
-  <a href="#s3" class="ni">Formatos</a>
+  <a href="#hero" class="ni active">Inicio</a>
+  <a href="#s1" class="ni">Contexto</a>
+  <a href="#s2" class="ni">Capas</a>
+  <a href="#s3" class="ni">DfD</a>
+  <a href="#s4" class="ni">Off-Site</a>
+  <a href="#s5" class="ni">Pasaportes</a>
+  <a href="#s6" class="ni">Regulación</a>
+  <a href="#s7" class="ni">Casos</a>
+  <a href="#s8" class="ni">Barreras</a>
+  <a href="#s9" class="ni">Soluciones</a>
+  <a href="#s10" class="ni">Hoja de Ruta</a>
 </nav>
 
-<div class="top-visual">
+<!-- HERO BANNER -->
+<div class="hero-banner">
+  <div class="hero-banner-inner">
+    <div class="hero-leaf hero-leaf1"></div>
+    <div class="hero-leaf hero-leaf2"></div>
+    <div class="hero-leaf hero-leaf3"></div>
+    <div class="hero-banner-text">
+      <div class="tag">Investigación extensa · Marzo 2026</div>
+      <h1>Del desecho al valor.<br>La construcción que aprende.</h1>
+    </div>
   </div>
-
-<div class="wrap">
-  
-  <section id="s1">
-    <h2 class="sec-h">Metodología de diseño</h2>
-    <p class="sec-sub">Conoce las fases iniciales para transformar el modelo lineal en un sistema de capas desacopladas que mantiene el valor.</p>
-    
-    <div class="dbox-grid">
-      <div class="dbox">
-        <div class="dbox-icon">✦</div>
-        <div class="dbox-t">Diagnóstico<br>del sitio</div>
-        <div class="dbox-d">Análisis del ciclo de vida y evaluación de materiales existentes.</div>
-        <div class="arrow-btn">↗</div>
-      </div>
-      <div class="dbox">
-        <div class="dbox-icon">⚯</div>
-        <div class="dbox-t">Selección<br>de capas</div>
-        <div class="dbox-d">Jerarquía de componentes según su velocidad de obsolescencia.</div>
-        <div class="arrow-btn">↗</div>
-      </div>
-      <div class="dbox">
-        <div class="dbox-icon">❖</div>
-        <div class="dbox-t">Ensamblaje<br>en seco</div>
-        <div class="dbox-d">Uniones mecánicas que garantizan el futuro desensamblaje.</div>
-        <div class="arrow-btn">↗</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="s2">
-    <h2 class="sec-h">Estructura del sistema</h2>
-    <p class="sec-sub">Nuestro enfoque divide el proyecto en diferentes capas terapéuticas y espaciales. Cada una tiene su propio ciclo de vida.</p>
-    
-    <div class="list-container">
-      <div class="list-item">
-        <div class="li-avatar"></div>
-        <div class="li-content">
-          <div class="li-title">Capa estructural</div>
-          <div class="li-desc">Cimientos, soportes, pilares principales. Larga duración (100+ años).</div>
-        </div>
-        <div class="arrow-btn" style="position:static; background:none; color:var(--text-light)">↗</div>
-      </div>
-      
-      <div class="list-item highlight">
-        <div class="li-avatar" style="background:var(--green-light)"></div>
-        <div class="li-content">
-          <div class="li-title">Capa de servicios</div>
-          <div class="li-desc">Instalaciones accesibles, clima, electricidad. Rápida obsolescencia.</div>
-        </div>
-        <div class="arrow-btn" style="position:static; background:none; color:#fff">↗</div>
-      </div>
-      
-      <div class="list-item">
-        <div class="li-avatar"></div>
-        <div class="li-content">
-          <div class="li-title">Capa espacial</div>
-          <div class="li-desc">Tabiquería interior seca, adaptabilidad funcional según usuario.</div>
-        </div>
-        <div class="arrow-btn" style="position:static; background:none; color:var(--text-light)">↗</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="s3">
-    <h2 class="sec-h">Formatos de escala</h2>
-    
-    <div class="formats-grid">
-      <div class="format-card fc-1">
-        <div class="fc-icon">◍</div>
-        <div class="fc-t">Micro</div>
-        <div class="fc-d">Aplicación a pequeña escala: mobiliario modular y particiones efímeras adaptables.</div>
-        <div class="arrow-btn">↗</div>
-      </div>
-      
-      <div class="format-card fc-2">
-        <div class="fc-icon">◫</div>
-        <div class="fc-t">Macro</div>
-        <div class="fc-d">Planteamiento a nivel de edificio completo. Estructura portante independiente de la piel.</div>
-        <div class="arrow-btn">↗</div>
-      </div>
-    </div>
-  </section>
-
 </div>
 
+<!-- HERO MAIN -->
+<div class="hero-main fade" id="hero">
+  <div class="hero-pill">Arquitectura · Sostenibilidad · Economía Circular</div>
+  <h1>Arquitectura de Capas <em>Desacopladas</em></h1>
+  <p>Una estrategia de supervivencia sistémica para la industria de la construcción ante la crisis climática global y el agotamiento de recursos naturales.</p>
+  <div class="stat-row">
+    <div class="sc">
+      <div class="sc-n" data-target="39">0%</div>
+      <div class="sc-l">emisiones globales CO₂ del sector</div>
+    </div>
+    <div class="sc">
+      <div class="sc-n" data-target="50">0%</div>
+      <div class="sc-l">de materias primas extraídas mundialmente</div>
+    </div>
+    <div class="sc">
+      <div class="sc-n">800M t</div>
+      <div class="sc-l">RCD generados en Europa cada año</div>
+    </div>
+    <div class="sc">
+      <div class="sc-n">ISO 20887</div>
+      <div class="sc-l">norma reguladora del DfD</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ══ S1: CONTEXTO ══ -->
+<div class="sec-block fade" id="s1">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">01 · Diagnóstico</div>
+    <h2 class="sec-title">Contexto y <em>Crisis Global</em><br>del Sector Constructivo</h2>
+    <p class="sec-intro">La industria de la construcción se encuentra en una encrucijada histórica. En un contexto de crisis climática acelerada y agotamiento de recursos naturales, la forma en que concebimos el ciclo de vida de los edificios debe mutar de un modelo de <strong>"consumo y desecho"</strong> hacia uno de <strong>"mantenimiento de valor"</strong>.</p>
+  </div>
+
+  <div class="dboxes">
+    <div class="db"><div class="db-n">39%</div><div class="db-l">Emisiones globales de CO₂ relacionadas con la energía</div></div>
+    <div class="db"><div class="db-n">36%</div><div class="db-l">Uso de energía global atribuido al sector</div></div>
+    <div class="db"><div class="db-n">50%</div><div class="db-l">De todas las materias primas extraídas a nivel mundial</div></div>
+    <div class="db"><div class="db-n">33%</div><div class="db-l">Del total de residuos generados en la Unión Europea</div></div>
+  </div>
+
+  <h3>El eufemismo de los RCD</h3>
+  <p>El concepto de "Residuos de Construcción y Demolición" (RCD) es un eufemismo para el fracaso del diseño. En Europa se generan más de <strong>800 millones de toneladas de RCD al año</strong>. La mayoría termina en vertederos o en procesos de <em>downcycling</em> —triturar hormigón para bases de carreteras—, perdiendo toda la energía embebida y la complejidad técnica con la que fueron fabricados.</p>
+
+  <div class="pullq">
+    <div class="pullq-t">Reducir el impacto ambiental se enfocaba en la fase operacional. Hoy, el foco se ha desplazado irreversiblemente hacia la fabricación e instalación de materiales.</div>
+    <div class="pullq-c">— IDOM Research, 2025</div>
+  </div>
+
+  <h3>El modelo lineal: una condena sistémica</h3>
+  <p>El modelo constructivo dominante es lineal: se extraen materias primas, se fabrican componentes, se ensamblan de forma <strong>permanente e irreversible</strong>, y se demolen décadas después generando residuos masivos. Este modelo ignora que los distintos sistemas de un edificio tienen vidas útiles radicalmente diferentes, y que la fusión indisociable entre ellos condena a los sistemas de vida corta a arrastrar consigo la destrucción de los de vida larga.</p>
+</div>
+
+<!-- ══ S2: SHEARING LAYERS ══ -->
+<div class="sec-block fade" id="s2">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">02 · Fundamento Teórico</div>
+    <h2 class="sec-title">La Teoría de las<br><em>"Shearing Layers"</em></h2>
+    <p class="sec-intro">En su obra <em>How Buildings Learn</em> (1994), Stewart Brand demostró que un edificio no es una entidad monolítica, sino una jerarquía de <strong>seis capas que cambian a velocidades radicalmente distintas</strong>. El error fundamental de la construcción moderna es la fricción entre ellas. Pulsa en cada capa para explorarla:</p>
+  </div>
+
+  <div class="accordion" id="layers">
+    <div class="acc open"><div class="acc-head"><div class="acc-dot" style="background:#4e6145"></div><div class="acc-title">SITIO (Site)</div><div class="acc-badge">Eterno · miles de años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">El lugar geográfico. Permanece cuando el edificio desaparece. Es el contexto geológico, ecológico e histórico que nunca se "desmonta". Define los límites de todo lo que vendrá y actúa como el ancla permanente del ciclo de vida.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-dot" style="background:#6b8060"></div><div class="acc-title">ESTRUCTURA</div><div class="acc-badge">50–300 años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Cimientos, columnas, losas. La capa más costosa de cambiar. Debe ser diseñada para perdurar y <strong>liberar las capas superiores</strong>, no aprisionarlas con instalaciones embutidas que comprometan su integridad futura.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-dot" style="background:#839972"></div><div class="acc-title">PIEL (Skin)</div><div class="acc-badge">20–50 años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Fachada y envolvente exterior. Responde a los cambios climáticos y estéticos de su época. Con DfD, puede renovarse para cumplir nuevas normativas energéticas sin tocar la estructura ni generar residuos de demolición.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-dot" style="background:#a4ba94"></div><div class="acc-title">SERVICIOS</div><div class="acc-badge">7–15 años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Electricidad, fontanería, HVAC, telecomunicaciones. La capa que más rápido queda obsoleta. <strong>Su accesibilidad es la clave de la mantenibilidad del edificio.</strong> Embutirla en hormigón es el error más costoso del diseño convencional: cuando la tubería falla, se destruye parte de la estructura.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-dot" style="background:#b4c8a8"></div><div class="acc-title">ESPACIO (Space Plan)</div><div class="acc-badge">3–30 años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Distribución interior: paredes divisorias, suelos técnicos, techos registrables. Varía según el uso del edificio y sus ocupantes. Con tabiquería seca atornillada, la transformación del espacio no genera residuos y puede hacerse sin obra invasiva.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-dot" style="background:#c8dcc0"></div><div class="acc-title">CONTENIDO (Stuff)</div><div class="acc-badge">Días–años</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Mobiliario, equipamiento, decoración. La capa más volátil. Su diseño y materialidad impactan directamente en los residuos del usuario final y su huella de carbono personal. El consumidor consciente actúa aquí.</div></div></div>
+  </div>
+
+  <div class="hbox">
+    <div class="hbox-label">⚡ El error fundamental</div>
+    <p>Cuando se empotran tuberías de fontanería (Servicios — 15 años) dentro de muros de carga de hormigón (Estructura — 100 años), la falla de la tubería obliga a destruir parte de la estructura. Un daño desproporcionado, un coste inasumible, residuos completamente evitables por diseño.</p>
+  </div>
+</div>
+
+<!-- ══ S3: DfD ══ -->
+<div class="sec-block fade" id="s3">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">03 · Metodología Central</div>
+    <h2 class="sec-title">Diseño para el Desensamblaje<br><em>(DfD) · ISO 20887</em></h2>
+    <p class="sec-intro">El DfD facilita la recuperación futura de componentes para su reutilización o reciclaje de alto valor. Se rige por la norma <strong>ISO 20887:2020</strong>, que establece los principios para la adaptabilidad y el desensamblaje en edificación e infraestructura civil.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step"><span class="step-ico">🔩</span><div class="step-n">Principio 01</div><div class="step-t">Jerarquía de Uniones</div><div class="step-d">Uniones mecánicas (tornillería, pernos, clips) sobre uniones químicas o térmicas. Las mecánicas pueden deshacerse; las químicas destruyen al desmontar.</div></div>
+    <div class="step"><span class="step-ico">📐</span><div class="step-n">Principio 02</div><div class="step-t">Estandarización Modular</div><div class="step-d">Modularidad dimensional que permite intercambiar piezas de diferentes fabricantes sin ajustes destructivos. La coordinación modular facilita la sustitución sin intervención en el resto del sistema.</div></div>
+    <div class="step"><span class="step-ico">🔓</span><div class="step-n">Principio 03</div><div class="step-t">Accesibilidad Estratégica</div><div class="step-d">Cualquier componente con ciclo de vida corto debe ser accesible sin retirar componentes de ciclo largo. Un servicio no puede estar atrapado detrás de una estructura permanente.</div></div>
+    <div class="step"><span class="step-ico">♻️</span><div class="step-n">Principio 04</div><div class="step-t">Minimización de Materiales</div><div class="step-d">Reducir la variedad de materiales para facilitar la clasificación automática en plantas de recuperación. Evitar composites y materiales mixtos que son irreciclables por definición.</div></div>
+    <div class="step"><span class="step-ico">📄</span><div class="step-n">Principio 05</div><div class="step-t">Documentación Perpetua</div><div class="step-d">La información sobre materiales, uniones e instrucciones de desmontaje debe perdurar durante toda la vida del edificio, integrada en su pasaporte digital.</div></div>
+    <div class="step"><span class="step-ico">🔍</span><div class="step-n">Principio 06</div><div class="step-t">Diseño para Identidad</div><div class="step-d">Los materiales deben poder identificarse décadas después. Evitar recubrimientos que enmascaren la composición real y usar materiales con identidad verificable y trazable.</div></div>
+  </div>
+
+  <h3>Métricas de circularidad DfD</h3>
+  <table class="tbl">
+    <tr><th>Métrica</th><th>Descripción</th><th>Objetivo</th></tr>
+    <tr><td><strong>Índice de Circularidad (CI)</strong></td><td>% de materiales recuperables al final de vida</td><td class="good">&gt; 85%</td></tr>
+    <tr><td><strong>Potencial de Reutilización (RP)</strong></td><td>Materiales reutilizables sin reprocesamiento</td><td class="good">&gt; 40%</td></tr>
+    <tr><td><strong>Carbono Embebido (EC)</strong></td><td>kgCO₂e/m² de la fase de construcción A1-A5</td><td class="good">&lt; 200 kgCO₂/m²</td></tr>
+    <tr><td><strong>Residuos de Obra (WG)</strong></td><td>kg de residuos generados por m² construido</td><td class="good">&lt; 5 kg/m²</td></tr>
+    <tr><td><strong>Tiempo de Desmontaje (DT)</strong></td><td>Horas/m² para deconstrucción limpia</td><td>Documentado en Pasaporte</td></tr>
+  </table>
+
+  <h3>DfD vs. Construcción Tradicional</h3>
+  <div class="format-cards">
+    <div class="fc light">
+      <div class="fc-ico">🏚️</div>
+      <div class="fc-label">Construcción Tradicional</div>
+      <div class="fc-t">Modelo linear</div>
+      <div class="fc-d">Uniones químicas irreversibles. Instalaciones embutidas en estructura. Fin de vida = demolición + vertedero. Mantenimiento destructivo e invasivo. Adaptabilidad prácticamente nula. Modelo de negocio: venta única.</div>
+      <div class="fc-tag">❌ Sin circularidad</div>
+    </div>
+    <div class="fc dark">
+      <div class="fc-orb"></div>
+      <div class="fc-label">Arquitectura DfD</div>
+      <div class="fc-t">Modelo circular</div>
+      <div class="fc-d">Uniones mecánicas reversibles. Instalaciones en suelos y techos técnicos accesibles. Fin de vida = deconstrucción + reutilización. Mantenimiento no invasivo por capas. Alta adaptabilidad. Product-as-a-Service.</div>
+      <div class="fc-tag">✓ 100% circular</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S4: OFF-SITE ══ -->
+<div class="sec-block fade" id="s4">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">04 · Tecnología Habilitante</div>
+    <h2 class="sec-title">Industrialización <em>Off-Site</em><br>y Plataformas de Producto</h2>
+    <p class="sec-intro">La edificación industrializada es el compañero natural del DfD. En entornos controlados se alcanzan <strong>tolerancias de ±2 mm</strong> imposibles in situ, permitiendo que los sistemas de ensamblaje en seco funcionen y sean desmontables décadas después.</p>
+  </div>
+
+  <div class="format-cards">
+    <div class="fc dark">
+      <div class="fc-orb"></div>
+      <div class="fc-label">Nuevo modelo de negocio</div>
+      <div class="fc-t">Product-as-a-Service</div>
+      <div class="fc-d">El fabricante mantiene la propiedad del componente, cobra por su rendimiento y se encarga de su actualización y recuperación al final del contrato. El cliente paga por el servicio, no por el material.</div>
+      <div class="fc-tag">PaaS</div>
+    </div>
+    <div class="fc light">
+      <div class="fc-ico">⛏️</div>
+      <div class="fc-label">Aprovechamiento urbano</div>
+      <div class="fc-t">Minería Urbana</div>
+      <div class="fc-d">El stock de materiales en edificios existentes se convierte en una "mina" de alto valor. Un edificio con pasaporte puede ser "minado" selectivamente, recuperando componentes con mayor valor que el material reciclado.</div>
+      <div class="fc-tag">Urban Mining</div>
+    </div>
+  </div>
+
+  <h3>Técnicas constructivas específicas DfD</h3>
+  <div class="list-rows">
+    <div class="list-row active">
+      <div class="lr-num">1</div>
+      <div class="lr-body"><div class="lr-title">Estructura</div><div class="lr-sub">Pórticos de madera laminada con uniones de acero atornilladas. Hormigón prefabricado con conectores mecánicos (dowels). Perfiles de acero normalizados con uniones empernadas. Sin solapes de armaduras que imposibiliten la separación.</div></div>
+      <div class="lr-badge">Estructura</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">2</div>
+      <div class="lr-body"><div class="lr-title">Fachadas</div><div class="lr-sub">Fachada ventilada con perfilería de aluminio y paneles de GFRC, HPL o madera fijados mecánicamente. Sistemas de muro cortina con vidriado estructural sustituible. Cada panel accesible individualmente.</div></div>
+      <div class="lr-badge">Envolvente</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">3</div>
+      <div class="lr-body"><div class="lr-title">Instalaciones</div><div class="lr-sub">Suelos técnicos elevados con acceso completo. Falsos techos registrables. Bandejas de cables sin fusión con la estructura. Colectores de fontanería accesibles y diferenciados por función.</div></div>
+      <div class="lr-badge">Servicios</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">4</div>
+      <div class="lr-body"><div class="lr-title">Particiones</div><div class="lr-sub">Tabiquería seca con perfilería de acero galvanizado y placas de yeso-cartón atornilladas (no encoladas). Unidades de cocina y baño como "pods" prefabricados completamente autónomos y extraíbles sin obra.</div></div>
+      <div class="lr-badge">Interior</div>
+      <div class="lr-arr">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S5: PASAPORTES ══ -->
+<div class="sec-block fade" id="s5">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">05 · Infraestructura Digital</div>
+    <h2 class="sec-title">BIM, Pasaportes de Materiales<br>y <em>Digital Product Passports</em></h2>
+    <p class="sec-intro">Para que el DfD sea efectivo, la información sobre qué materiales hay, dónde están y cómo se desmontan debe perdurar décadas. El <strong>BIM</strong> se convierte en la base de datos viva de la economía circular.</p>
+  </div>
+
+  <div class="steps">
+    <div class="step"><span class="step-ico">🏷️</span><div class="step-n">ID</div><div class="step-t">Identidad</div><div class="step-d">Composición química exacta, origen geográfico y proveedor. Certificados de verificación de terceros. Identificador único QR/RFID físicamente integrado en el componente.</div></div>
+    <div class="step"><span class="step-ico">💎</span><div class="step-n">RP</div><div class="step-t">Potencial de Reutilización</div><div class="step-d">Valor residual esperado en €/tonelada. Jerarquía de recuperación: reutilización directa → reparación → refabricación → reciclaje → recuperación de energía.</div></div>
+    <div class="step"><span class="step-ico">📋</span><div class="step-n">DIS</div><div class="step-t">Instrucciones de Desmontaje</div><div class="step-d">Guía paso a paso para la deconstrucción segura. Herramientas necesarias, tiempo estimado, precauciones. Actualizable digitalmente durante toda la vida del edificio.</div></div>
+    <div class="step"><span class="step-ico">🌿</span><div class="step-n">ACV</div><div class="step-t">Huella de Carbono</div><div class="step-d">Análisis de Ciclo de Vida embebido módulo por módulo según EN 15804. Permite calcular el carbono total y comparar opciones de fin de vida.</div></div>
+  </div>
+
+  <div class="hbox">
+    <div class="hbox-label">🆕 Nuevo Marco Regulatorio · CPR 2024/3110</div>
+    <p>En vigor desde el <strong>7 de enero de 2025</strong>, el nuevo Reglamento Europeo de Productos de Construcción hace los Pasaportes Digitales de Producto (DPP) un <strong>requisito legal</strong> para todos los productos de construcción en el mercado único europeo. Los DPP deben contener: composición, ACV, indicadores GWP/CO₂e e instrucciones de reutilización y reciclaje. Plena implementación prevista para 2032.</p>
+  </div>
+
+  <p>Plataformas como <strong>Madaster</strong> (originada en los Países Bajos) están construyendo bases de datos globales de materiales en edificios, funcionando como "catastrales de materiales" que permiten conocer el valor de los materiales almacenados en el stock construido. Junto con el concepto europeo de <strong>Digital Building Logbook</strong>, estos sistemas constituyen la infraestructura digital de la economía circular en construcción.</p>
+</div>
+
+<!-- ══ S6: REGULACIÓN ══ -->
+<div class="sec-block fade" id="s6">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">06 · Marco Normativo</div>
+    <h2 class="sec-title">El Ecosistema Regulatorio<br><em>de la UE 2024–2025</em></h2>
+    <p class="sec-intro">El año 2025 marca un punto de inflexión regulatorio. La confluencia de varias normativas crea el primer ecosistema regulatorio coherente que <strong>obliga</strong> al sector a adoptar principios de economía circular.</p>
+  </div>
+
+  <div class="list-rows">
+    <div class="list-row active">
+      <div class="lr-num">→</div>
+      <div class="lr-body"><div class="lr-title">CPR · 2024/3110 — Reglamento de Productos de Construcción</div><div class="lr-sub">En vigor desde enero 2025. DPP obligatorios, indicadores climáticos mandatorios en declaraciones de prestaciones, marcado CE ampliado a características ambientales.</div></div>
+      <div class="lr-badge">Ene 2025</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">→</div>
+      <div class="lr-body"><div class="lr-title">ESPR · 2024/1781 — Reglamento de Ecodiseño para Productos Sostenibles</div><div class="lr-sub">Obliga a fabricantes a diseñar para reparabilidad, durabilidad y reciclaje. Prohíbe la destrucción de productos no vendidos. Plan de trabajo 2025–2030 prioriza acero y materiales de construcción.</div></div>
+      <div class="lr-badge">2025–2030</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">→</div>
+      <div class="lr-body"><div class="lr-title">EPBD — Directiva de Eficiencia Energética de Edificios (revisada 2024)</div><div class="lr-sub">Edificios públicos nZEB desde 2027, todos los edificios nuevos desde 2030. Rehabilitación energética profunda del parque existente con objetivos vinculantes a 2050.</div></div>
+      <div class="lr-badge">2027 / 2030</div>
+      <div class="lr-arr">›</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-num">→</div>
+      <div class="lr-body"><div class="lr-title">CSRD — Directiva de Informes de Sostenibilidad Corporativa</div><div class="lr-sub">Obliga a empresas cotizadas a reportar datos verificados de sostenibilidad incluyendo el impacto de sus edificios. Crea incentivo de mercado para adoptar prácticas DfD que mejoren los indicadores reportados.</div></div>
+      <div class="lr-badge">2024–2025</div>
+      <div class="lr-arr">›</div>
+    </div>
+  </div>
+
+  <h4>Hoja de ruta regulatoria</h4>
+  <div class="roadmap" id="roadmap">
+    <div class="rm-row"><div class="rm-yr">ene 2025</div><div class="rm-track"><div class="rm-bar" data-w="100" style="background:var(--sage-d);">CPR 2024/3110 entra en vigor</div></div></div>
+    <div class="rm-row"><div class="rm-yr">dic 2025</div><div class="rm-track"><div class="rm-bar" data-w="88" style="background:#5a7a50;">Primeros estándares armonizados DPP</div></div></div>
+    <div class="rm-row"><div class="rm-yr">2026</div><div class="rm-track"><div class="rm-bar" data-w="76" style="background:#6a8a60;">ESPR: reglas para acero y pantallas</div></div></div>
+    <div class="rm-row"><div class="rm-yr">2027</div><div class="rm-track"><div class="rm-bar" data-w="62" style="background:#7a9a70;">Edificios públicos nZEB obligatorio</div></div></div>
+    <div class="rm-row"><div class="rm-yr">2030</div><div class="rm-track"><div class="rm-bar" data-w="50" style="background:#8aaa80;">Todo edificio nuevo nZEB</div></div></div>
+    <div class="rm-row"><div class="rm-yr">2032</div><div class="rm-track"><div class="rm-bar" data-w="38" style="background:#9aba90;color:#2a3a20;">Plena implementación CPR · DPP universal</div></div></div>
+  </div>
+</div>
+
+<!-- ══ S7: CASOS ══ -->
+<div class="sec-block fade" id="s7">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">07 · Evidencia Empírica</div>
+    <h2 class="sec-title">Casos de Éxito<br>y <em>Proyectos de Referencia</em></h2>
+    <p class="sec-intro">El DfD no es teoría: existen proyectos construidos y habitados que demuestran su viabilidad técnica, económica y ambiental a nivel europeo e internacional.</p>
+  </div>
+
+  <div class="cases">
+    <div class="cs">
+      <div class="cs-head g1">
+        <div><div class="cs-ht">Gonsi Sócrates</div><div class="cs-hl">Viladecans, Barcelona · 6.000 m²</div></div>
+        <div class="cs-tag">Industrial circular</div>
+      </div>
+      <div class="cs-body">
+        <p>Hito de la arquitectura circular en España. Utiliza una estructura de hormigón industrializado con uniones mecánicas y fachadas de madera desmontables. La fase de diseño incorporó desde el inicio un protocolo de fin de vida, especificando qué elementos serán reutilizados, cuáles refabricados y cuáles reciclados de alto valor. Los residuos de la propia construcción fueron mínimos gracias a la prefabricación controlada.</p>
+        <div class="cs-metrics">
+          <div><div class="cm-n">−60%</div><div class="cm-l">Reducción CO₂ vs. convencional</div></div>
+          <div><div class="cm-n">88%</div><div class="cm-l">Material con potencial circular</div></div>
+          <div><div class="cm-n">&lt;5%</div><div class="cm-l">Residuos de obra generados</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs">
+      <div class="cs-head g2">
+        <div><div class="cs-ht">Barcelona Circular (BAC)</div><div class="cs-hl">Barcelona · Nave industrial rehabilitada</div></div>
+        <div class="cs-tag">Cajas dentro de cajas</div>
+      </div>
+      <div class="cs-body">
+        <p>Nave industrial rehabilitada mediante el sistema de "cajas dentro de cajas": los nuevos espacios de oficina son módulos de madera que no tocan la estructura original y pueden ser desmontados sin dejar rastro. La estructura existente actúa como contenedor neutral mientras los sistemas internos evolucionan independientemente, demostrando cómo el DfD aplicado a la rehabilitación no compromete el valor histórico de la estructura preexistente.</p>
+      </div>
+    </div>
+    <div class="cs">
+      <div class="cs-head g3">
+        <div><div class="cs-ht">CIRCL Pavilion — ABN AMRO</div><div class="cs-hl">Amsterdam, Países Bajos · 1.850 m²</div></div>
+        <div class="cs-tag">Referente mundial DfD</div>
+      </div>
+      <div class="cs-body">
+        <p>El banco ABN AMRO diseñó el edificio como un "banco de materiales": cada componente tiene un pasaporte digital con su valor residual. La madera de la estructura proviene de árboles que debían talarse de todas formas. El aislamiento es de ropa de trabajo reciclada. Las fachadas son paneles de aluminio reutilizados de otro edificio. Al final del período de uso, el edificio será "deconstruido" recuperando una fracción significativa de la inversión inicial.</p>
+        <div class="cs-metrics">
+          <div><div class="cm-n">98%</div><div class="cm-l">Materiales documentados con pasaporte</div></div>
+          <div><div class="cm-n">0</div><div class="cm-l">Residuos enviados a vertedero</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cs">
+      <div class="cs-head g4">
+        <div><div class="cs-ht">Brummen Town Hall</div><div class="cs-hl">Países Bajos · Ayuntamiento circular</div></div>
+        <div class="cs-tag">Urban Mining Rights</div>
+      </div>
+      <div class="cs-body">
+        <p>Ayuntamiento construido con principios DfD y el sistema de Pasaporte Madaster. El municipio contrató el edificio bajo un modelo de "Urban Mining Rights": al final del contrato de uso (75 años), los proveedores de materiales tienen derecho prioritario a recuperar sus componentes para un nuevo ciclo. El valor residual del edificio está tasado y forma parte del balance financiero del municipio.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pullq">
+    <div class="pullq-t">Los países nórdicos lideran la implementación a escala sistémica. Dinamarca ha incorporado el DfD en sus requisitos de licitación pública para edificios mayores de 1.000 m². Los Países Bajos tienen el objetivo de ser una economía completamente circular en 2050.</div>
+    <div class="pullq-c">— Nordic Leadership in Circular Construction</div>
+  </div>
+</div>
+
+<!-- ══ S8: BARRERAS ══ -->
+<div class="sec-block fade" id="s8">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">08 · Análisis Crítico</div>
+    <h2 class="sec-title">Barreras Reales de<br><em>Implementación</em></h2>
+    <p class="sec-intro">A pesar de la evidencia técnica y los mandatos regulatorios crecientes, la adopción masiva del DfD sigue siendo marginal. Las razones son complejas y sistémicas. Pulsa para explorar cada barrera:</p>
+  </div>
+
+  <div class="accordion" id="barriers">
+    <div class="acc open"><div class="acc-head"><div class="acc-ico">💰</div><div class="acc-title">Barrera Económica: El Coste Inicial Diferido</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Los proyectos DfD tienen un sobrecoste de construcción estimado entre el 5% y el 15% respecto a la construcción convencional, principalmente por el mayor coste de las uniones mecánicas y la prefabricación de precisión. El problema es que los beneficios —menores costes de mantenimiento, mayor valor residual, reutilización de materiales— se materializan a largo plazo, mientras los costes son inmediatos. En un sector dominado por promotores que venden y no mantienen, los incentivos económicos están sistémicamente desalineados.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-ico">📋</div><div class="acc-title">Barrera Regulatoria: Normativas Diseñadas para el Modelo Lineal</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Las normativas de construcción vigentes en España fueron diseñadas para verificar la seguridad de materiales nuevos, no para certificar la calidad de materiales reutilizados. La reutilización de estructuras metálicas o de madera enfrenta obstáculos legales: ¿cómo se certifica un perfil de acero con 30 años de historia? ¿Qué garantías ofrece el promotor sobre su capacidad portante? La ausencia de normativa clara desincentiva activamente la reutilización.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-ico">🎓</div><div class="acc-title">Barrera Formativa: La Brecha de Competencias</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">En España hay aproximadamente 150 técnicos certificados LEED, 100 asesores BREEAM y menos de 50 profesionales especializados en DfD o economía circular aplicada a la construcción. La mayoría de arquitectos, ingenieros y aparejadores fue formada en técnicas constructivas convencionales. El DfD requiere una forma radicalmente distinta de pensar el proyecto desde el primer momento, y esa mentalidad no se aprende en dos talleres.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-ico">🔗</div><div class="acc-title">Barrera de Cadena de Valor: Fragmentación Industrial</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">El DfD requiere coordinación estrecha entre promotores, arquitectos, ingenieros, constructores, fabricantes de sistemas y gestores de residuos. La industria de la construcción está extremadamente fragmentada: miles de pequeñas empresas especializadas que trabajan por proyectos sin relaciones estables. Esta estructura hace muy difícil implementar estándares compartidos de interfaces modulares que requieren acuerdos a largo plazo.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-ico">💾</div><div class="acc-title">Barrera Tecnológica: La Persistencia de los Datos</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">Un pasaporte de materiales solo tiene valor si los datos son accesibles décadas después. ¿Quién garantiza que la plataforma digital donde está alojado el pasaporte BIM existirá en 80 años? ¿Qué pasa cuando la empresa que vendió el sistema quiebra? La falta de estándares abiertos e interoperables para los pasaportes de materiales es una amenaza real a la durabilidad de la información que el DfD necesita para funcionar.</div></div></div>
+    <div class="acc"><div class="acc-head"><div class="acc-ico">🧠</div><div class="acc-title">Barrera Cultural: La Resistencia al Cambio</div><div class="acc-arr">▶</div></div><div class="acc-body"><div class="acc-inner">El sector de la construcción es estructuralmente conservador. El DfD implica que los fabricantes compartan información técnica detallada sobre sus productos, algo que choca con los instintos de protección de propiedad industrial. Implica también que los constructores admitan que su valor no está en "montar todo junto" sino en "poder desmontarlo limpiamente".</div></div></div>
+  </div>
+</div>
+
+<!-- ══ S9: SOLUCIONES ══ -->
+<div class="sec-block fade" id="s9">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">09 · Propuestas</div>
+    <h2 class="sec-title">10 Soluciones Sistémicas<br>para la <em>Transición</em></h2>
+    <p class="sec-intro">Las barreras identificadas requieren soluciones en múltiples planos simultáneamente. No existe una medida única capaz de desencadenar la transición: es necesaria una actuación coordinada sobre los incentivos económicos, el marco normativo, el sistema formativo y la infraestructura tecnológica.</p>
+  </div>
+
+  <div class="sols">
+    <div class="sol" data-n="1"><span class="sol-tag policy">Política</span><div class="sol-t">Fiscalidad Circular Diferenciada</div><div class="sol-d">IVA reducido (4%) para materiales con pasaporte DfD certificado. Tasa sobre extracción de materias primas vírgenes que internalice los costes ambientales reales. Los fondos subsidiarían los sobrecostes de la transición circular, alineando los incentivos económicos con los objetivos ambientales.</div></div>
+    <div class="sol" data-n="2"><span class="sol-tag policy">Política</span><div class="sol-t">Obligatoriedad en Contratación Pública</div><div class="sol-d">Todo edificio público nuevo mayor de 500 m² debe incorporar un Pasaporte de Materiales y cumplir criterios mínimos de circularidad (CI > 70%). La contratación pública representa el 15–20% del total de la construcción en Europa y puede actuar como palanca de mercado para desarrollar la cadena de valor circular a escala.</div></div>
+    <div class="sol" data-n="3"><span class="sol-tag tech">Tecnología</span><div class="sol-t">Plataforma Abierta de Pasaportes (Open MP)</div><div class="sol-d">Desarrollar un estándar abierto e interoperable para pasaportes de materiales, hospedado en infraestructura pública y garantizado por los estados miembros. Un "ORCID para materiales de construcción" que garantice la persistencia de datos durante décadas con independencia de actores comerciales.</div></div>
+    <div class="sol" data-n="4"><span class="sol-tag tech">Tecnología</span><div class="sol-t">IA para Detección y Valoración de Materiales</div><div class="sol-d">Modelos de visión artificial capaces de identificar materiales a partir de imágenes y escáner LiDAR, estimando automáticamente el potencial de reutilización y valor residual. Reduciría drásticamente el coste de la auditoría previa a la deconstrucción, haciendo el proceso económicamente viable.</div></div>
+    <div class="sol" data-n="5"><span class="sol-tag edu">Educación</span><div class="sol-t">Reforma Curricular Universitaria</div><div class="sol-d">Incorporar el DfD, los Análisis de Ciclo de Vida (ACV) y la economía circular como asignaturas troncales —no optativas— en todos los grados de Arquitectura, Ingeniería Civil e Industrial. Certificación profesional europea en "Economía Circular en Construcción" con formación continua obligatoria.</div></div>
+    <div class="sol" data-n="6"><span class="sol-tag market">Mercado</span><div class="sol-t">Mercados Secundarios de Componentes</div><div class="sol-d">Plataformas digitales especializadas en la compraventa de componentes de construcción reutilizados, con certificación de calidad estandarizada. Un sello europeo de "componente certificado para reutilización" daría confianza a compradores y seguradoras para operar en este mercado.</div></div>
+    <div class="sol" data-n="7"><span class="sol-tag tech">Tecnología</span><div class="sol-t">Interfaces Modulares Abiertas (OBI)</div><div class="sol-d">Catálogo abierto de Open Building Interfaces que permita que componentes de distintos fabricantes sean físicamente compatibles e intercambiables. Al igual que los estándares USB, los OBI permitirían que una fachada de fabricante A se conecte a una estructura de fabricante B.</div></div>
+    <div class="sol" data-n="8"><span class="sol-tag market">Mercado</span><div class="sol-t">Productos Financieros Circulares</div><div class="sol-d">Hipotecas circulares que valoran el mayor valor residual del edificio, bonos verdes ligados a indicadores de circularidad verificados, y seguros de deconstrucción que garanticen el valor de los materiales. El Green Deal europeo debe priorizar explícitamente la construcción circular.</div></div>
+    <div class="sol" data-n="9"><span class="sol-tag policy">Política</span><div class="sol-t">Normativa de Reutilización Estructural</div><div class="sol-d">Desarrollar normas técnicas específicas (tipo EN o ETA) para la certificación de materiales estructurales reutilizados: perfiles de acero, madera laminada, placas de hormigón prefabricado. Establecer los protocolos de ensayo, coeficientes de seguridad y trazabilidad documental necesaria.</div></div>
+    <div class="sol" data-n="10"><span class="sol-tag policy">Política</span><div class="sol-t">Planes de Deconstrucción Obligatorios</div><div class="sol-d">Requerir que todo proyecto mayor de 500 m² incluya un "Plan de Deconstrucción" que especifique cómo se desmontará el edificio al final de su vida útil, qué materiales se recuperarán, cuál es el valor residual estimado y quién es responsable de la recuperación.</div></div>
+  </div>
+</div>
+
+<!-- ══ S10: HOJA DE RUTA ══ -->
+<div class="sec-block fade" id="s10">
+  <div class="divider"></div>
+  <div style="margin-top:64px;">
+    <div class="sec-label">10 · Visión Estratégica</div>
+    <h2 class="sec-title">Hoja de Ruta<br><em>2026–2035</em></h2>
+    <p class="sec-intro">La transición hacia una arquitectura circular no puede concebirse como un conjunto de medidas aisladas. Requiere una hoja de ruta que coordine actuaciones en el plano tecnológico, normativo, financiero y formativo, con horizontes temporales realistas y métricas de éxito verificables.</p>
+  </div>
+
+  <div class="phases">
+    <div class="ph">
+      <div class="ph-band p1"><div class="ph-band-label">Fase 1 · 2026–2028</div></div>
+      <div class="ph-body">
+        <div class="ph-t">Fundamentos</div>
+        <div class="ph-d">Infraestructura institucional y técnica: Open MP, reforma curricular en 50% de escuelas, catálogo de interfaces modulares estandarizadas, fondo de garantía para proyectos DfD piloto en construcción pública.</div>
+      </div>
+    </div>
+    <div class="ph">
+      <div class="ph-band p2"><div class="ph-band-label">Fase 2 · 2028–2031</div></div>
+      <div class="ph-body">
+        <div class="ph-t">Escala</div>
+        <div class="ph-d">Del nicho al mainstream: 30% de obra nueva con criterios circulares, pasaportes obligatorios para obra pública, exenciones fiscales DfD, plataforma nacional de mercado secundario de componentes.</div>
+      </div>
+    </div>
+    <div class="ph">
+      <div class="ph-band p3"><div class="ph-band-label">Fase 3 · 2031–2035</div></div>
+      <div class="ph-body">
+        <div class="ph-t">Transformación</div>
+        <div class="ph-d">La norma, no la excepción: 70% obra nueva con DfD, pasaportes obligatorios para toda obra >250 m², tasa progresiva sobre RCD no recuperado, integración plena con Digital Building Logbook europeo.</div>
+      </div>
+    </div>
+  </div>
+
+  <h4>Métricas de éxito del sistema</h4>
+  <div class="mt-wrap">
+    <table class="mt">
+      <tr><th>Indicador</th><th>Hoy (2025)</th><th>Objetivo 2030</th><th>Objetivo 2035</th></tr>
+      <tr><td>% Obra nueva con Pasaporte de Materiales</td><td class="bad">&lt;3%</td><td>30%</td><td class="good">75%</td></tr>
+      <tr><td>RCD en vertedero (Mt/año, Europa)</td><td class="bad">~250 Mt</td><td>150 Mt</td><td class="good">&lt;80 Mt</td></tr>
+      <tr><td>Tasa reutilización alta calidad</td><td class="bad">~5%</td><td>25%</td><td class="good">50%</td></tr>
+      <tr><td>Carbono embebido promedio</td><td class="bad">~400 kg/m²</td><td>280 kg/m²</td><td class="good">&lt;200 kg/m²</td></tr>
+      <tr><td>Técnicos certificados circular (España)</td><td class="bad">~200</td><td>5.000</td><td class="good">&gt;15.000</td></tr>
+    </table>
+  </div>
+
+  <div class="pullq" style="margin-top:40px;">
+    <div class="pullq-t">El edificio del futuro no se construye para durar cien años tal como es. Se construye para que sus materiales duren mil años, en ciclos de uso sucesivos, siempre en su nivel más alto de valor.</div>
+    <div class="pullq-c">— Principio operativo de la Arquitectura Circular</div>
+  </div>
+
+  <h3>Conclusión: De la urgencia a la oportunidad</h3>
+  <p>La Arquitectura de Capas Desacopladas y el DfD no son tendencias pasajeras ni idealismos medioambientales: son la <strong>respuesta técnica más coherente</strong> a las presiones físicas, regulatorias y económicas que definirán el sector de la construcción en las próximas décadas.</p>
+  <p>La pregunta no es si la transición va a ocurrir —el nuevo marco regulatorio europeo y los límites planetarios hacen inevitable que ocurra— sino a qué velocidad, con qué coste de transición y <strong>quién capturará el valor</strong> de la transformación. Los actores que se posicionen hoy como líderes de esta transición serán los dominantes del mercado en 2035. Los que esperen a que "sea obligatorio" llegarán tarde.</p>
+</div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="fi">
+    <div class="ft">Arquitectura de Capas Desacopladas</div>
+    <p>Investigación Extensa · Marzo 2026</p>
+    <p style="margin-top:8px;">Fuentes: CPR (UE) 2024/3110 · ESPR (UE) 2024/1781 · ISO 20887:2020 · IDOM Research · UKGBC · BUILD-UP EC · GBCe · Stewart Brand — How Buildings Learn (1994)</p>
+  </div>
+</footer>
+
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// Progress bar + back to top
+const pb = document.getElementById('pgbar');
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  pb.style.width = (window.scrollY / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  btt.classList.toggle('show', window.scrollY > 400);
+});
+
+// Counter animation
+function countUp(el, target) {
+  let v = 0;
+  const timer = setInterval(() => {
+    v = Math.min(v + target / 45, target);
+    el.textContent = Math.round(v) + '%';
+    if (v >= target) clearInterval(timer);
+  }, 28);
+}
+const cObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      countUp(e.target, parseInt(e.target.dataset.target));
+      cObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(c => cObs.observe(c));
+
+// Layer accordion — only one open at a time
+document.querySelectorAll('#layers .acc').forEach(item => {
+  item.querySelector('.acc-head').addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('#layers .acc').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// Barrier accordion — toggle independently
+document.querySelectorAll('#barriers .acc').forEach(item => {
+  item.querySelector('.acc-head').addEventListener('click', () => {
+    item.classList.toggle('open');
+  });
+});
+
+// List row toggle
+document.querySelectorAll('.list-row').forEach(row => {
+  row.addEventListener('click', () => {
+    const parent = row.closest('.list-rows');
+    parent.querySelectorAll('.list-row').forEach(r => r.classList.remove('active'));
+    row.classList.add('active');
+  });
+});
+
+// Fade-in on scroll
+const fObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.06 });
+document.querySelectorAll('.fade').forEach(el => fObs.observe(el));
+
+// Roadmap bars
+const rmObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.rm-bar').forEach((b, i) => {
+        setTimeout(() => { b.style.width = b.dataset.w + '%'; }, i * 110);
+      });
+      rmObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+const rm = document.getElementById('roadmap');
+if (rm) rmObs.observe(rm);
+
+// Active nav
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.ni').forEach(l => l.classList.remove('active'));
+      const lk = document.querySelector('.ni[href="#' + e.target.id + '"]');
+      if (lk) lk.classList.add('active');
+    }
+  });
+}, { threshold: 0.35 });
+document.querySelectorAll('.sec-block[id], div[id="hero"]').forEach(s => navObs.observe(s));
+</script>
 </body>
 </html>
